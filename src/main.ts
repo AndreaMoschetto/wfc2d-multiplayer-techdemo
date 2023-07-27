@@ -1,9 +1,7 @@
-import { Engine } from "excalibur";
-import { Player } from "./player";
+import { ROOM } from "./constants";
+import { Game } from "./game";
 
-const game = new Engine({width:800, height:600})
-
-const player = new Player(200)
-game.add(player)
-
-game.start()
+const game = new Game()
+game.start().then(() => {
+    game.goToScene(ROOM)
+})
