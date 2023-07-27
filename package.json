@@ -1,0 +1,18 @@
+{
+  "name": "excali-game",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "parcel serve index.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "excalibur": "^0.27.0",
+    "parcel": "^2.9.3"
+  }
+}
