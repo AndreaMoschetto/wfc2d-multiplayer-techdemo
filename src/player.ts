@@ -31,14 +31,13 @@ export class Player extends Actor {
             xMovement += 1;
         }
 
-        // Normalizza il vettore di movimento diagonale per evitare che il giocatore si muova più velocemente
+        //normalize diagonal movement
         if (xMovement !== 0 || yMovement !== 0) {
             const length = Math.sqrt(xMovement * xMovement + yMovement * yMovement);
             xMovement /= length;
             yMovement /= length;
         }
 
-        // Aggiorna la posizione del giocatore in base al movimento normalizzato
         this.pos.x += xMovement * this.speed * _delta / 1000;
         this.pos.y += yMovement * this.speed * _delta / 1000;
     }
