@@ -9,7 +9,7 @@ export class Player extends Actor {
             y: 25,
             width: 25,
             height: 25,
-            color: Color.Black
+            color: Color.White
         })
         this.speed = speed
     }

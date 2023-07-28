@@ -1,0 +1,6 @@
+.container {
+    /* Flexbox used to center game */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
