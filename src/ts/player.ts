@@ -1,18 +1,32 @@
-import { Actor, Color, Engine, Input } from "excalibur";
+import { Actor, Color, Engine, Input, Label, Vector, vec } from "excalibur";
 
 export class Player extends Actor {
+    private username: string
     private speed: number
+    private text: Label
 
-    constructor(speed: number) {
+    constructor(username: string) {
         super({
-            x: 25,
-            y: 25,
             width: 25,
             height: 25,
             color: Color.White
         })
-        this.speed = speed
+        this.username = username
+        this.speed = 200;
+        this.text = new Label({
+            y:-17,
+            text: this.username,
+            color: Color.White
+        })
     }
+
+    override onInitialize(_engine: Engine): void {
+        this.pos = vec(100,100)
+        this.text.pos = new Vector(-this.text.getTextWidth() / 2, this.text.pos.y);
+        this.addChild(this.text)
+    }
+
+    
 
     override onPostUpdate(_engine: Engine, _delta: number): void {
         let xMovement = 0;
@@ -40,5 +54,6 @@ export class Player extends Actor {
 
         this.pos.x += xMovement * this.speed * _delta / 1000;
         this.pos.y += yMovement * this.speed * _delta / 1000;
+        
     }
 }
