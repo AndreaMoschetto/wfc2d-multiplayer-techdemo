@@ -1,21 +1,20 @@
 import { Actor, Color, Engine, Input, Label, Vector, vec } from "excalibur";
 
 export class Player extends Actor {
-    private username: string
     private speed: number
     private text: Label
 
     constructor(username: string) {
         super({
+            name: username,
             width: 25,
             height: 25,
             color: Color.White
         })
-        this.username = username
         this.speed = 200;
         this.text = new Label({
             y:-17,
-            text: this.username,
+            text: this.name,
             color: Color.White
         })
     }
