@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "excalibur": "^0.27.0",
-    "parcel": "^2.9.3"
+    "parcel": "^2.9.3",
+    "socket.io-client": "^4.7.1"
   }
 }
