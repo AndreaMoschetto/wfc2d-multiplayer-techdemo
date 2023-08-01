@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build-client": "tsc --project src/client/tsconfig.json && cp src/client/src/index.html src/www/ && cp src/client/src/style.css src/www",
+    "build-client": "parcel build src/client/src/index.html --dist-dir src/www",
     "start-server": "ts-node src/server.ts",
     "start": "npm run build-client && npm run start-server"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "buffer": "^6.0.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   },

@@ -57,6 +57,6 @@ export class Player extends Actor {
         this.pos.x += xMovement * this.speed * _delta / 1000;
         this.pos.y += yMovement * this.speed * _delta / 1000;
         
-        // WebSocketManager.getInstance().sendMessage(this.name, this.pos)
+        WebSocketManager.getInstance().sendMessage(this.name, this.pos)
     }
 }
