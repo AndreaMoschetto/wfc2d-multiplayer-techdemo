@@ -131,3 +131,6 @@ dist
 
 # Parcel
 .parcel-cache
+
+# Custom
+www/

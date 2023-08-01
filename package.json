@@ -3,18 +3,23 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "parcel serve index.html"
+    "build-client": "tsc --project src/client/tsconfig.json && cp src/client/src/index.html src/www/ && cp src/client/src/style.css src/www",
+    "start-server": "ts-node src/server.ts",
+    "start": "npm run build-client && npm run start-server"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "buffer": "^6.0.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   },
   "dependencies": {
+    "@types/express": "^4.17.17",
+    "cors": "^2.8.5",
     "excalibur": "^0.27.0",
+    "express": "^4.18.2",
     "parcel": "^2.9.3",
+    "socket.io": "^4.7.1",
     "socket.io-client": "^4.7.1"
   }
 }
