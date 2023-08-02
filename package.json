@@ -1,9 +1,15 @@
 {
-  "name": "excali-game",
-  "version": "1.0.0",
-  "description": "",
+  "name": "wfc2d-multiplayer-techdemo",
+  "version": "0.1.0",
+  "description": "A techdemo game realized to study the Wave Function Collapse and WebSockets in typescript",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Niria/wfc2d-multiplayer-techdemo"
+  },
   "scripts": {
-    "start": "parcel serve index.html"
+    "build-client": "parcel build src/client/src/index.html --dist-dir src/www",
+    "start-server": "ts-node src/server.ts",
+    "start": "npm run build-client && npm run start-server"
   },
   "author": "",
   "license": "ISC",
@@ -13,8 +19,12 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
+    "@types/express": "^4.17.17",
+    "cors": "^2.8.5",
     "excalibur": "^0.27.0",
+    "express": "^4.18.2",
     "parcel": "^2.9.3",
+    "socket.io": "^4.7.1",
     "socket.io-client": "^4.7.1"
   }
 }
