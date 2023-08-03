@@ -1,6 +1,6 @@
 import { Vector } from "excalibur"
 import { io, Socket } from "socket.io-client"
-import { SERVER_ADDR, SERVER_PORT } from "./constants"
+import { SERVER_ADDR, SERVER_PORT } from "../constants"
 
 export class WebSocketManager {
     private static instance: WebSocketManager
@@ -24,7 +24,7 @@ export class WebSocketManager {
         return this.instance
     }
 
-    public sendMessage(username: string, position: Vector) {
+    public sendPosition(username: string, position: Vector) {
         this.io.emit('msg', { 'username': username, 'position': position })
     }
 }

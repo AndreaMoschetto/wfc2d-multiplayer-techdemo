@@ -1,5 +1,5 @@
 import { Actor, Color, Engine, Input, Label, Vector, vec } from "excalibur";
-import { WebSocketManager } from "./websocket-manager";
+import { WebSocketManager } from "./managers/websocket-manager";
 
 export class Player extends Actor {
     private speed: number
@@ -25,7 +25,7 @@ export class Player extends Actor {
         this.text.pos = new Vector(-this.text.getTextWidth() / 2, this.text.pos.y);
         this.addChild(this.text)
 
-        WebSocketManager.getInstance().sendMessage(this.name, this.pos)
+        WebSocketManager.getInstance().sendPosition(this.name, this.pos)
     }
 
     
@@ -57,6 +57,7 @@ export class Player extends Actor {
         this.pos.x += xMovement * this.speed * _delta / 1000;
         this.pos.y += yMovement * this.speed * _delta / 1000;
         
-        WebSocketManager.getInstance().sendMessage(this.name, this.pos)
+        if (xMovement !== 0 || yMovement !== 0) 
+            WebSocketManager.getInstance().sendPosition(this.name, this.pos)
     }
 }
