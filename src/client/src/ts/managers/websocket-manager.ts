@@ -1,6 +1,6 @@
 import { Vector } from "excalibur"
 import { io, Socket } from "socket.io-client"
-import { SERVER_ADDR, SERVER_PORT } from "../constants"
+import { SERVER_ADDR, SERVER_PORT } from "@settings"
 
 export class WebSocketManager {
     private static instance: WebSocketManager

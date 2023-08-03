@@ -1,5 +1,5 @@
 import { Actor, Color, Engine, Input, Label, Vector, vec } from "excalibur";
-import { WebSocketManager } from "./managers/websocket-manager";
+import { WebSocketManager } from "@root/managers/websocket-manager";
 
 export class Player extends Actor {
     private speed: number
