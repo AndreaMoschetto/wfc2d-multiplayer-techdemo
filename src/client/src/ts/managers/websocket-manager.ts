@@ -4,6 +4,7 @@ import { SERVER_ADDR, SERVER_PORT } from "@root/settings"
 
 export class WebSocketManager {
     private static instance: WebSocketManager
+    
 
     private port: number
     private ipaddr: string
@@ -12,6 +13,10 @@ export class WebSocketManager {
         this.port = _port;
         this.ipaddr = _ipaddr;
         this.io = io(`http://${this.ipaddr}:${this.port}`)
+
+        this.io.on('newmsg', (data) => {
+            
+        })
     }
 
     public static getInstance(
