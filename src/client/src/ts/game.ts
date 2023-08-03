@@ -1,7 +1,7 @@
 import { Color, Engine } from "excalibur";
 import { MainMenu } from "@root/scenes/main-menu";
 import { Room } from "@root/scenes/room";
-import { MAINMENU, ROOM } from "@settings";
+import { MAINMENU, ROOM } from "@root/settings";
 
 export class Game extends Engine {
     constructor() {

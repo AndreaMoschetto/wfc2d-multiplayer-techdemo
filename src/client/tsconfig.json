@@ -5,8 +5,7 @@
         "outDir": "../www",
         "baseUrl": "./src",
         "paths": {
-            "@root/*":["ts/*"],
-            "@settings":["ts/settings"]
+            "@root/*":["ts/*"]
         }
     }
 }
