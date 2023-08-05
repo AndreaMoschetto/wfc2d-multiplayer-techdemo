@@ -3,4 +3,39 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+}
+
+.container #ui {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#ui.MainMenu .button.button--start {
+    font-family: 'Courier New', monospace;
+    background: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+    height: 40px;
+    width: 70px;
+    border: 2px solid white;
+    margin-top: 30px;
+    font-size: 24px;
+}
+#ui.MainMenu .button.button--start:hover{
+    background: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+}
+
+.username-input {
+    font-family: 'Courier New', monospace;
+    background: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+    border: none;
+    border-bottom: 2px solid white;
+    outline: none;
+    font-size: 24px;
+    text-align: center;
 }
