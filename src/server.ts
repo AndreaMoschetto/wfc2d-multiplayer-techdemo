@@ -3,6 +3,7 @@ import express from 'express'
 import { Server } from 'socket.io'
 import cors from 'cors'
 import path from 'path'
+import { SERVER_PORT } from './client/src/ts/settings'
 
 const app = express()
 const httpServer = createServer(app)
@@ -34,5 +35,5 @@ io.on('connection', (socket) => {
         //io.sockets.emit('newmsg', data)
     })
 })
-httpServer.listen(7777)
+httpServer.listen(SERVER_PORT)
 console.log('[listening] waiting for connections...')
