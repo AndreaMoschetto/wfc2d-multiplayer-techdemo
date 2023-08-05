@@ -19,7 +19,8 @@ const users: any = []
 io.on('connection', (socket) => {
     console.log('A user connected')
     socket.on('setUsername', (data) => {
-        console.log(data); if (users.indexOf(data) > -1) {
+        console.log(data); 
+        if (users.indexOf(data) > -1) {
             socket.emit('userExists', data + ' username is taken! Try some other username.')
         } else {
             users.push(data)
@@ -29,7 +30,8 @@ io.on('connection', (socket) => {
     socket.on('msg', (data) => {
         //Send message to everyone
         console.log(data)
-        io.sockets.emit('newmsg', data)
+        socket.broadcast.emit('newmsg', data)
+        //io.sockets.emit('newmsg', data)
     })
 })
 httpServer.listen(7777)
