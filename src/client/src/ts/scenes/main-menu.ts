@@ -2,9 +2,9 @@ import { ROOM } from "@root/settings";
 import { Scene, SceneActivationContext } from "excalibur";
 
 export class MainMenu extends Scene {
-    private ui: HTMLElement
+    private ui!: HTMLElement
     override onActivate(_context: SceneActivationContext<unknown>): void {
-        this.ui = document.getElementById('ui') ?? new HTMLElement()
+        this.ui = document.getElementById('ui')!
         this.ui.classList.add('MainMenu')
 
         const inputField = document.createElement('input')
