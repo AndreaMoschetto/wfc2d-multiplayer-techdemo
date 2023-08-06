@@ -1,29 +1,17 @@
-import { Actor, Color, Engine, Input, Label, Vector, vec } from "excalibur";
+import {Engine, Input} from "excalibur";
 import { WebSocketManager } from "@root/managers/websocket-manager";
+import { Character } from "@root/characters/character";
 
-export class Player extends Actor {
+export class Player extends Character {
     private speed: number
-    private text: Label
 
-    constructor(username: string) {
-        super({
-            name: username,
-            width: 25,
-            height: 25,
-            color: Color.White
-        })
+    constructor(name: string) {
+        super(name)
         this.speed = 200;
-        this.text = new Label({
-            y:-17,
-            text: this.name,
-            color: Color.White
-        })
     }
 
     override onInitialize(_engine: Engine): void {
-        this.pos = vec(100,100)
-        this.text.pos = new Vector(-this.text.getTextWidth() / 2, this.text.pos.y);
-        this.addChild(this.text)
+        super.onInitialize(_engine)
 
         WebSocketManager.getInstance().sendPosition(this.name, this.pos)
     }
