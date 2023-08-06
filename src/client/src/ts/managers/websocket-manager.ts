@@ -1,6 +1,7 @@
 import { Vector } from "excalibur"
 import { io, Socket } from "socket.io-client"
 import { SERVER_ADDR, SERVER_PORT } from "@root/settings"
+import { EventManager } from "@root/managers/event-manager"
 
 export class WebSocketManager {
     private static instance: WebSocketManager
@@ -29,7 +30,16 @@ export class WebSocketManager {
         return this.instance
     }
 
+    public setUsername(username: string) {
+        this.io.emit('setUsername', username)
+        EventManager.getInstance().emit('newUser', username)
+    }
+
     public sendPosition(username: string, position: Vector) {
-        this.io.emit('msg', { 'username': username, 'position': { 'x': position.x, 'y': position.y } })
+        const data = {
+            'username': username, 'position': { 'x': position.x, 'y': position.y }
+        }
+        this.io.emit('msg', data)
+        EventManager.getInstance().emit('userMoved', data)
     }
 }

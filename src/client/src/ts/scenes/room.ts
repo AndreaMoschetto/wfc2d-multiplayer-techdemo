@@ -1,5 +1,5 @@
 import { Scene, SceneActivationContext } from "excalibur";
-import { Player } from "../player";
+import { Player } from "@root/characters/player";
 
 export class Room extends Scene {
     private player: Player | null = null
