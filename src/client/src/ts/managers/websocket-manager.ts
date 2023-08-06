@@ -17,6 +17,7 @@ export class WebSocketManager {
 
         this.io.on('newmsg', (data) => {
             console.log(`user: ${data.username} is at\nx:${data.position.x}\ny:${data.position.y}`)
+            EventManager.getInstance().emit('userMoved', data)
         })
     }
 
@@ -40,6 +41,5 @@ export class WebSocketManager {
             'username': username, 'position': { 'x': position.x, 'y': position.y }
         }
         this.io.emit('msg', data)
-        EventManager.getInstance().emit('userMoved', data)
     }
 }
