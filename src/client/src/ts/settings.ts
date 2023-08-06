@@ -1,3 +1,7 @@
+//Game settings
+export const RES_WIDTH = 800
+export const RES_HEIGHT = 600
+
 //Scene names
 export const MAINMENU = 'main-menu'
 export const ROOM = 'room'
