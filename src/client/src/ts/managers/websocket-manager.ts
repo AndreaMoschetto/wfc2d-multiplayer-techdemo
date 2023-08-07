@@ -16,8 +16,10 @@ export class WebSocketManager {
         this.io = io(`http://${this.ipaddr}:${this.port}`)
 
         this.io.on('newmsg', (data) => {
-            console.log(`user: ${data.username} is at\nx:${data.position.x}\ny:${data.position.y}`)
-            EventManager.getInstance().emit('userMoved', data)
+            EventManager.getInstance().emit('characterMoved', data)
+        })
+        this.io.on('allCharacters', (data) => {
+            EventManager.getInstance().emit('allCharacters', data)
         })
     }
 

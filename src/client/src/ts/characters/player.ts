@@ -12,7 +12,7 @@ export class Player extends Character {
 
     override onInitialize(_engine: Engine): void {
         super.onInitialize(_engine)
-
+        this.pos.setTo(100,100)
         WebSocketManager.getInstance().sendPosition(this.name, this.pos)
     }
 

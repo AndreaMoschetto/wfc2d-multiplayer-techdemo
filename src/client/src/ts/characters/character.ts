@@ -2,9 +2,10 @@ import { Actor, Color, Engine, Label, Vector, vec } from "excalibur";
 
 export class Character extends Actor {
     private text: Label
-    constructor(name: string) {
+    constructor(name: string, x: number=100, y: number=100) {
         super({
             name: name,
+            pos: vec(x,y),
             width: 25,
             height: 25,
             color: Color.White
@@ -16,7 +17,6 @@ export class Character extends Actor {
         })
     }
     override onInitialize(_engine: Engine): void {
-        this.pos = vec(100,100)
         this.text.pos = new Vector(-this.text.getTextWidth() / 2, this.text.pos.y);
         this.addChild(this.text)
     }
