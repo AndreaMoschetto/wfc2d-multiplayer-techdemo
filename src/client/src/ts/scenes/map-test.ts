@@ -1,3 +1,4 @@
+import { Player } from "@root/characters/player";
 import { Images } from "@root/resources";
 import { Engine, Scene, SceneActivationContext, SpriteSheet, TileMap } from "excalibur";
 
@@ -39,5 +40,6 @@ export class MapTest extends Scene {
     override onActivate(_context: SceneActivationContext<unknown>): void {
         this.add(this.tilemap)
         this.tilemap.scale.setTo(3,3)
+        this.add(new Player("bru"))
     }
 }
