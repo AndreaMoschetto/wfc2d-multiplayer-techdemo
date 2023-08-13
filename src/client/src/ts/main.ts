@@ -1,7 +1,8 @@
 import { Game } from "@root/game";
-import { MAINMENU } from "@root/settings";
+import { MAINMENU, TEST_ROOM } from "@root/settings";
+import { loader } from "@root/resources";
 
 const game = new Game()
-game.start().then(() => {
-    game.goToScene(MAINMENU)
+game.start(loader).then(() => {
+    game.goToScene(TEST_ROOM)
 })
