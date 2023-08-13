@@ -3,9 +3,10 @@
     "compilerOptions": {
         "rootDir": "./src",
         "outDir": "../www",
-        "baseUrl": "./src",
+        "baseUrl": "./",
         "paths": {
-            "@root/*":["ts/*"]
+            "@root/*":["src/ts/*"],
+            "@assets/*":["assets/*"]
         }
     }
 }
