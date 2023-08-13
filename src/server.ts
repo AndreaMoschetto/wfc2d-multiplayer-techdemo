@@ -11,11 +11,13 @@ const io = new Server(httpServer)
 
 app.use(cors())
 const clientPath = path.join(__dirname, 'www')
+const assetsPath = path.join(__dirname, 'client/assets')
 
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
 app.use(express.static(clientPath))
+app.use(express.static(assetsPath))
 const users: { username: string, position: { x: number, y: number }}[] = []
 
 io.on('connection', (socket) => {
