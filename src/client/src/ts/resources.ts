@@ -1,7 +1,7 @@
 import { ImageSource, Loader } from "excalibur";
 
 const Images = {
-    tilemapImage: new ImageSource('tilemap_packed.png')
+    tilemapImage: new ImageSource('tilemap.png')
 }
 
 const loader = new Loader()
