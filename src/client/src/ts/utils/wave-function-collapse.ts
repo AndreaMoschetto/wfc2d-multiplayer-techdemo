@@ -16,6 +16,9 @@ class WFCSlot {
 
     public constraint(adjacencyFilter: string[]): boolean {
         const preLength = this.getEntropy()
+        console.log(`CONSTRAINT`)
+        console.log(`coords: y:${this.y}, x:${this.x}`)
+        console.log(`possible tiles: ${this.possibleTiles}`)
         console.log(`filter: ${adjacencyFilter}`)
         this.possibleTiles = this.possibleTiles.filter(
             elem => {
@@ -127,7 +130,9 @@ class WFCMatrix {
         let logging: string = ''
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.columns; j++) {
-                logging += (`(${this.matrix[i]![j]!.getChosenId()}) `)
+                const entropy = this.matrix[i]![j]!.getEntropy()
+                const value = entropy != 1 ? entropy : this.matrix[i]![j]!.getChosenId()
+                logging += (`(${value}) `)
             }
             logging += '\n'
         }
@@ -135,12 +140,12 @@ class WFCMatrix {
         console.log("END MATRIX")
     }
 
-    public getAllKeys(): [number,number][][]{
+    public getAllKeys(): [number, number][][] {
         const allKeys = new Array<Array<[number, number]>>(this.rows)
         for (let y = 0; y < this.rows; y++) {
             allKeys[y] = new Array<[number, number]>(this.columns)
             for (let x = 0; x < this.columns; x++) {
-                const [j, i] = this.matrix[y]![x]?.getChosenId().split('_').map(Number) ?? [0,0]
+                const [j, i] = this.matrix[y]![x]?.getChosenId().split('_').map(Number) ?? [0, 0]
                 allKeys[y]![x] = [j!, i!]
             }
         }
@@ -168,20 +173,24 @@ export class WaveFunctionCollapse {
         this.matrix = new WFCMatrix(height, width, tilesCols, tilesRows)
     }
 
-    public resolve(): [number, number][][]{
+    public resolve(): [number, number][][] {
         this.matrix.logMatrix()
         while (!this.matrix.isCollapsed()) {
             let slot: WFCSlot = this.matrix.selectSlot()
+            if (slot.getEntropy() == 0) {
+                this.matrix.cleanUp()
+                break
+            }
             slot.collapse()
             this.propagate(slot)
             this.matrix.logMatrix()
-            this.matrix.cleanUp()
+
             this.matrix.logMatrix()
         }
         this.matrix.logMatrix()
         return this.matrix.getAllKeys()
     }
-    
+
     private propagate(startingSlot: WFCSlot) {
         let stack: WFCSlot[] = [startingSlot]
 
@@ -196,7 +205,7 @@ export class WaveFunctionCollapse {
                 let adj = adjacentSlots[i]!
                 if (adj === undefined) continue
                 console.log("accepted: " + i)
-                if (this.constraint(current, adj, i) && adj.getEntropy() > 1)
+                if (this.constraint(current, adj, i))
                     stack.push(adj)
             }
         }
@@ -204,12 +213,13 @@ export class WaveFunctionCollapse {
 
     private constraint(slot: WFCSlot, neighbour: WFCSlot, i: AdiacencyType): boolean {
         let possibleTiles = slot.getPossibleTiles()
-        let entropyChanged: boolean = false
+        let filter: string[] = []
         possibleTiles.forEach(tileId => {
-            if (neighbour.constraint(NeighbourConstraints.getRoles(tileId)[i]!))
-                entropyChanged = true
+            filter = filter.concat(NeighbourConstraints.getRoles(tileId)[i]!)
         });
-        return entropyChanged
+        if (neighbour.constraint(filter))
+                return true
+        return false
     }
 }
 
@@ -242,18 +252,18 @@ class NeighbourConstraints {
     }
     private static roles: Record<string, string[][]> = {
         "0_0": [['4_1'], ['0_1', '0_2'], ['1_0', '2_0'], ['4_1']],
-        "0_1": [['4_1'], ['0_2', '0_1'], ['1_1', '2_1'], ['0_0', '0_1']],
-        "0_2": [['5_1'], ['4_1'], ['1_2', '2_2'], ['0_0', '0_1']],
+        "0_1": [['4_1'], ['0_1', '0_2'], ['1_1', '2_1'], ['0_0', '0_1']],
+        "0_2": [['4_1'], ['4_1'], ['1_2', '2_2'], ['0_0', '0_1']],
 
-        "1_0": [['0_0', '1_0'], ['1_1', '2_1'], ['1_0', '2_0'], ['4_1']],
+        "1_0": [['0_0', '1_0'], ['1_1', '1_2'], ['1_0', '2_0'], ['4_1']],
         "1_1": [['1_1', '0_1'], ['1_1', '1_2'], ['1_1', '2_1'], ['1_1', '1_0']],
-        "1_2": [['0_2', '1_2'], ['4_1'], ['1_2', '2_2'], ['1_1', '0_1']],
+        "1_2": [['0_2', '1_2'], ['4_1'], ['1_2', '2_2'], ['1_1', '1_0']],
 
-        "2_0": [['1_0', '2_0'], ['2_1', '2_2'], ['4_1'], ['4_1']],
+        "2_0": [['1_0', '0_0'], ['2_1', '2_2'], ['4_1'], ['4_1']],
         "2_1": [['1_1', '0_1'], ['2_1', '2_2'], ['4_1'], ['2_1', '2_0']],
         "2_2": [['1_2', '0_2'], ['4_1'], ['4_1'], ['2_1', '2_0']],
 
-        "4_1": [['4_1', '2_1'], ['4_1', '1_0'], ['4_1', '0_1'], ['4_1', '1_2']],
+        "4_1": [['4_1', '2_0', '2_1', '2_2'], ['4_1', '0_0', '1_0', '2_0'], ['4_1', '0_0', '0_1', '0_2'], ['4_1', '0_2', '1_2', '2_2']],
     }
 
     public static getRoles(id: string): string[][] {

@@ -9,8 +9,8 @@ export class MapTest extends Scene {
     public constructor() {
         super();
         this.tilemap = new TileMap({
-            rows: 10,
-            columns: 10,
+            rows: 15,
+            columns: 15,
             tileWidth: 32,
             tileHeight: 32,
         });
@@ -33,7 +33,7 @@ export class MapTest extends Scene {
                 }
             }
         });
-        let wfc = new WaveFunctionCollapse(10, 10, tilemapSpriteSheet.columns, tilemapSpriteSheet.rows)
+        let wfc = new WaveFunctionCollapse(this.tilemap.rows, this.tilemap.columns, tilemapSpriteSheet.columns, tilemapSpriteSheet.rows)
         const matrix = wfc.resolve()
 
         for(let y = 0; y < this.tilemap.rows; y++){
