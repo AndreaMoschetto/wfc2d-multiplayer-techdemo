@@ -1,12 +1,18 @@
 import { Player } from "@root/characters/player";
 import { Images } from "@root/resources";
 import { WaveFunctionCollapse } from "@root/utils/wave-function-collapse";
-import { BoundingBox, Engine, Input, Scene, SceneActivationContext, SpriteSheet, TileMap, vec } from "excalibur";
+import { BoundingBox, Color, Engine, Input, Scene, SceneActivationContext, ScreenElement, SpriteSheet, TileMap, vec } from "excalibur";
 
 export class MapTest extends Scene {
     private tilemap: TileMap
     private tilemapSpriteSheet!: SpriteSheet
     private player: Player
+
+    private padding!: number
+    private screenWidth!: number
+    private screenHeight!: number
+    private mapWidth!: number
+    private mapHeight!: number
 
     public constructor() {
         super();
@@ -16,6 +22,8 @@ export class MapTest extends Scene {
             tileWidth: 32,
             tileHeight: 32,
         });
+
+
         this.player = new Player("bob")
     }
 
@@ -35,35 +43,34 @@ export class MapTest extends Scene {
                 }
             }
         });
-        
+
+        this.padding = 10
+        this.screenWidth = _engine.canvasWidth
+        this.screenHeight = _engine.canvasHeight;
+        this.mapWidth = this.tilemap.columns * this.tilemap.tileWidth;
+        this.mapHeight = this.tilemap.rows * this.tilemap.tileHeight;
+
         this.produceMap()
 
-        const padding = 50
-        const screenWidth = _engine.canvasWidth
-        const screenHeight = _engine.canvasHeight;
-
-        // Ottenere le dimensioni della mappa (ad esempio, se usi un TileMap)
-        const mapWidth = this.tilemap.columns * this.tilemap.tileWidth;
-        const mapHeight = this.tilemap.rows * this.tilemap.tileHeight;
-
         const box = new BoundingBox(
-            padding,
-            padding,
-            mapWidth - screenWidth - padding,
-            mapHeight - screenHeight - padding
+            this.padding,
+            this.padding,
+            this.mapWidth - this.screenWidth - this.padding,
+            this.mapHeight - this.screenHeight - this.padding
         )
-        _engine.currentScene.camera.strategy.lockToActor(this.player)
-        _engine.currentScene.camera.strategy.limitCameraBounds(box);
+
+        this.camera.strategy.lockToActor(this.player)
+        this.camera.strategy.limitCameraBounds(box);
     }
 
-    private produceMap(){
+    private produceMap() {
         let wfc = new WaveFunctionCollapse(this.tilemap.rows, this.tilemap.columns, this.tilemapSpriteSheet.columns, this.tilemapSpriteSheet.rows)
         const matrix = wfc.resolve()
 
-        for(let y = 0; y < this.tilemap.rows; y++){
-            for(let x = 0; x < this.tilemap.columns; x++){
+        for (let y = 0; y < this.tilemap.rows; y++) {
+            for (let x = 0; x < this.tilemap.columns; x++) {
                 const graphic = this.tilemapSpriteSheet.getSprite(matrix[y]![x]?.[1]!, matrix[y]![x]?.[0]!)!
-                this.tilemap.getTile(x,y).addGraphic(graphic)
+                this.tilemap.getTile(x, y).addGraphic(graphic)
             }
         }
     }
@@ -76,8 +83,9 @@ export class MapTest extends Scene {
 
     override onActivate(_context: SceneActivationContext<unknown>): void {
         this.add(this.tilemap)
-        this.tilemap.scale.setTo(1, 1)
-        _context.engine.currentScene.camera.zoom = 2
         this.add(this.player)
+        this.player.pos.setTo(this.mapWidth/4, this.mapHeight/4)
+        this.tilemap.scale.setTo(1, 1)
+        this.camera.zoom = 1
     }
 }

@@ -5,14 +5,13 @@ import { Character } from "@root/characters/character";
 export class Player extends Character {
     private speed: number
 
-    constructor(name: string) {
-        super(name)
+    constructor(name: string, x: number=0, y: number=0) {
+        super(name, x, y)
         this.speed = 100;
     }
 
     override onInitialize(_engine: Engine): void {
         super.onInitialize(_engine)
-        this.pos.setTo(_engine.halfCanvasWidth, _engine.halfCanvasHeight)
         WebSocketManager.getInstance().sendPosition(this.name, this.pos)
     }
 
