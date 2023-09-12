@@ -6,14 +6,14 @@ export class Character extends Actor {
         super({
             name: name,
             pos: vec(x,y),
-            width: 25,
-            height: 25,
+            width: 10,
+            height: 10,
             color: Color.White
         });
         this.text = new Label({
             y:-17,
             text: this.name,
-            color: Color.White
+            color: Color.White,
         })
     }
     override onInitialize(_engine: Engine): void {
