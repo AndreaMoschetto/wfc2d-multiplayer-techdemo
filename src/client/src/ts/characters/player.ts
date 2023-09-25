@@ -1,4 +1,4 @@
-import { BoundingBox, Camera, Engine, Input } from "excalibur";
+import { BoundingBox, Camera, CollisionType, Engine, Input } from "excalibur";
 import { WebSocketManager } from "@root/managers/websocket-manager";
 import { Character } from "@root/characters/character";
 
@@ -13,6 +13,7 @@ export class Player extends Character {
     override onInitialize(_engine: Engine): void {
         super.onInitialize(_engine)
         WebSocketManager.getInstance().sendPosition(this.name, this.pos)
+        this.body.collisionType = CollisionType.Active
     }
 
 

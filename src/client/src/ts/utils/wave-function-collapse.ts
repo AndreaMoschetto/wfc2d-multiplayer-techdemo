@@ -4,11 +4,13 @@ class WFCSlot {
     public readonly x: number
     public possibleTiles: string[]
     public chosenOne: string
+    private solid: boolean
 
     constructor(y: number, x: number, tilesCols: number, tilesRows: number) {
         this.y = y
         this.x = x
         this.chosenOne = ''
+        this.solid = false
         this.possibleTiles = []
 
         this.possibleTiles = NeighbourConstraints.getAllPossibleTiles()
@@ -16,20 +18,22 @@ class WFCSlot {
 
     public constraint(adjacencyFilter: string[]): boolean {
         const preLength = this.getEntropy()
-        console.log(`CONSTRAINT`)
-        console.log(`coords: y:${this.y}, x:${this.x}`)
-        console.log(`possible tiles: ${this.possibleTiles}`)
-        console.log(`filter: ${adjacencyFilter}`)
+        //console.log(`CONSTRAINT`)
+        //console.log(`coords: y:${this.y}, x:${this.x}`)
+        //console.log(`possible tiles: ${this.possibleTiles}`)
+        //console.log(`filter: ${adjacencyFilter}`)
         this.possibleTiles = this.possibleTiles.filter(
             elem => {
                 return adjacencyFilter.includes(elem)
             }
         )
-        if (this.getEntropy() == 1)
+        if (this.getEntropy() == 1){
             this.chosenOne = this.possibleTiles[0] ?? ''
+            this.solid = NeighbourConstraints.getSolidity(this.chosenOne)
+        }
 
-        console.log("finished filtering")
-        console.log(this)
+        //console.log("finished filtering")
+        //console.log(this)
         if (preLength != this.getEntropy()) return true
         return false
     }
@@ -44,10 +48,14 @@ class WFCSlot {
 
     public collapse() {
         let index = Math.floor(Math.random() * this.possibleTiles.length);
-        console.log(`randomTileIndex: ${index}`)
+        //console.log(`randomTileIndex: ${index}`)
         this.constraint([this.possibleTiles[index]!])
 
-        console.log(this.possibleTiles)
+        //console.log(this.possibleTiles)
+    }
+
+    public isSolid(): boolean{
+        return this.solid
     }
 
     //to define-------
@@ -107,7 +115,7 @@ class WFCMatrix {
     public getAdjacentSlots(slot: WFCSlot): WFCSlot[] {
         const x = slot.x
         const y = slot.y
-        console.log(`searching adjacency slots of: ${y},${x}:`)
+        //console.log(`searching adjacency slots of: ${y},${x}:`)
         let adjacentSlots: WFCSlot[] = new Array(4)
 
         if (y > 0)
@@ -126,7 +134,7 @@ class WFCMatrix {
     }
 
     public logMatrix() {
-        console.log("MATRIX:")
+        //console.log("MATRIX:")
         let logging: string = ''
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.columns; j++) {
@@ -136,17 +144,18 @@ class WFCMatrix {
             }
             logging += '\n'
         }
-        console.log(logging)
-        console.log("END MATRIX")
+        //console.log(logging)
+        //console.log("END MATRIX")
     }
 
-    public getAllKeys(): [number, number][][] {
-        const allKeys = new Array<Array<[number, number]>>(this.rows)
+    public getAllKeys(): [number, number, boolean][][] {
+        const allKeys = new Array<Array<[number, number, boolean]>>(this.rows)
         for (let y = 0; y < this.rows; y++) {
-            allKeys[y] = new Array<[number, number]>(this.columns)
+            allKeys[y] = new Array<[number, number, boolean]>(this.columns)
             for (let x = 0; x < this.columns; x++) {
                 const [j, i] = this.matrix[y]![x]?.getChosenId().split('_').map(Number) ?? [0, 0]
-                allKeys[y]![x] = [j!, i!]
+                const solidity = this.matrix[y]![x]?.isSolid() ?? false
+                allKeys[y]![x] = [j!, i!, solidity]
             }
         }
 
@@ -154,7 +163,7 @@ class WFCMatrix {
     }
 
     public cleanUp() {
-        console.log("CLEANUP")
+        //console.log("CLEANUP")
         this.matrix.forEach(row => {
             row.forEach(slot => {
                 if (slot.getEntropy() === 0) {
@@ -173,7 +182,7 @@ export class WaveFunctionCollapse {
         this.matrix = new WFCMatrix(height, width, tilesCols, tilesRows)
     }
 
-    public resolve(): [number, number][][] {
+    public resolve(): [number, number, boolean][][] {
         this.matrix.logMatrix()
         while (!this.matrix.isCollapsed()) {
             let slot: WFCSlot = this.matrix.selectSlot()
@@ -196,15 +205,15 @@ export class WaveFunctionCollapse {
 
         while (stack.length > 0) {
             let current = stack.pop()!
-            console.log("current:")
-            console.log(current)
+            //console.log("current:")
+            //console.log(current)
             let adjacentSlots = this.matrix.getAdjacentSlots(current)
-            console.log("adjacentSlots:")
-            console.log(adjacentSlots)
+            //console.log("adjacentSlots:")
+            //console.log(adjacentSlots)
             for (let i = 0; i < adjacentSlots.length; i++) {
                 let adj = adjacentSlots[i]!
                 if (adj === undefined) continue
-                console.log("accepted: " + i)
+                //console.log("accepted: " + i)
                 if (this.constraint(current, adj, i))
                     stack.push(adj)
             }
@@ -218,7 +227,7 @@ export class WaveFunctionCollapse {
             filter = filter.concat(NeighbourConstraints.getRoles(tileId)[i]!)
         });
         if (neighbour.constraint(filter))
-                return true
+            return true
         return false
     }
 }
@@ -250,7 +259,7 @@ class NeighbourConstraints {
         "5_1": [['4_1', '3_1'], ['5_1', '5_2'], ['0_1'], ['5_1', '5_0']],
         "5_2": [['4_2', '3_2'], ['1_0'], ['0_1'], ['5_2', '5_1']],
     }
-    private static roles: Record<string, string[][]> = {
+    private static _roles: Record<string, string[][]> = {
         "0_0": [['4_1'], ['0_1', '0_2'], ['1_0', '2_0'], ['4_1']],
         "0_1": [['4_1'], ['0_1', '0_2'], ['1_1', '2_1'], ['0_0', '0_1']],
         "0_2": [['4_1'], ['4_1'], ['1_2', '2_2'], ['0_0', '0_1']],
@@ -265,9 +274,56 @@ class NeighbourConstraints {
 
         "4_1": [['4_1', '2_0', '2_1', '2_2'], ['4_1', '0_0', '1_0', '2_0'], ['4_1', '0_0', '0_1', '0_2'], ['4_1', '0_2', '1_2', '2_2']],
     }
+    private static roles: Record<string, { "adjacency": string[][], "solid": boolean }> = {
+        "0_0": {
+            "adjacency": [['4_1'], ['0_1', '0_2'], ['1_0', '2_0'], ['4_1']],
+            "solid": true
+        },
+        "0_1": {
+            "adjacency": [['4_1'], ['0_1', '0_2'], ['1_1', '2_1'], ['0_0', '0_1']],
+            "solid": true
+        },
+        "0_2": {
+            "adjacency": [['4_1'], ['4_1'], ['1_2', '2_2'], ['0_0', '0_1']],
+            "solid": true
+        },
+        "1_0": {
+            "adjacency": [['0_0', '1_0'], ['1_1', '1_2'], ['1_0', '2_0'], ['4_1']],
+            "solid": true
+        },
+        "1_1": {
+            "adjacency": [['1_1', '0_1'], ['1_1', '1_2'], ['1_1', '2_1'], ['1_1', '1_0']],
+            "solid": true
+        },
+        "1_2": {
+            "adjacency": [['0_2', '1_2'], ['4_1'], ['1_2', '2_2'], ['1_1', '1_0']],
+            "solid": true
+        },
+        "2_0": {
+            "adjacency": [['1_0', '0_0'], ['2_1', '2_2'], ['4_1'], ['4_1']],
+            "solid": true
+        },
+        "2_1": {
+            "adjacency": [['1_1', '0_1'], ['2_1', '2_2'], ['4_1'], ['2_1', '2_0']],
+            "solid": true
+        },
+        "2_2": {
+            "adjacency": [['1_2', '0_2'], ['4_1'], ['4_1'], ['2_1', '2_0']],
+            "solid": true
+        },
+        "4_1": {
+            "adjacency": [['4_1', '2_0', '2_1', '2_2'], ['4_1', '0_0', '1_0', '2_0'], ['4_1', '0_0', '0_1', '0_2'], ['4_1', '0_2', '1_2', '2_2']],
+            "solid": false
+        },
+    };
+
 
     public static getRoles(id: string): string[][] {
-        return this.roles[id] ?? []
+        return this.roles[id]!['adjacency'] ?? []
+    }
+
+    public static getSolidity(id: string): boolean{
+        return this.roles[id]!['solid'] ?? false
     }
 
     public static getAllPossibleTiles(): string[] {

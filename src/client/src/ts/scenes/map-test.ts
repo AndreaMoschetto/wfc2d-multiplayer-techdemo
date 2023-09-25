@@ -1,7 +1,7 @@
 import { Player } from "@root/characters/player";
 import { Images } from "@root/resources";
 import { WaveFunctionCollapse } from "@root/utils/wave-function-collapse";
-import { BoundingBox, Color, Engine, Input, Scene, SceneActivationContext, ScreenElement, SpriteSheet, TileMap, vec } from "excalibur";
+import { BoundingBox, Color, Engine, Input, Scene, SceneActivationContext, ScreenElement, SpriteSheet, Tile, TileMap, vec } from "excalibur";
 
 export class MapTest extends Scene {
     private tilemap: TileMap
@@ -60,7 +60,27 @@ export class MapTest extends Scene {
         )
 
         this.camera.strategy.lockToActor(this.player)
-        this.camera.strategy.limitCameraBounds(box);
+        this.camera.strategy.limitCameraBounds(box)
+
+
+        
+    }
+
+    private spawnPlayer() {
+        let initialTile!: Tile
+        const tilePadding = 5
+        while(true){
+            let tileX = Math.floor(tilePadding + Math.random() * (this.tilemap.columns - tilePadding*2))
+            let tileY = Math.floor(tilePadding + Math.random() * (this.tilemap.rows - tilePadding*2))
+            console.log(`tile coords: ${tileX}, ${tileY}`)
+    
+            initialTile = this.tilemap.getTile(tileX, tileY)
+            console.log(initialTile)
+            if (!initialTile.solid) break
+        }
+        this.player.pos.setTo(initialTile.pos.x, initialTile.pos.y)
+        console.log(`player at ${this.player.pos.x}, ${this.player.pos.y}\ntile at: ${initialTile.pos.x}, ${initialTile.pos.y}`)
+        this.add(this.player)
     }
 
     private produceMap() {
@@ -70,7 +90,9 @@ export class MapTest extends Scene {
         for (let y = 0; y < this.tilemap.rows; y++) {
             for (let x = 0; x < this.tilemap.columns; x++) {
                 const graphic = this.tilemapSpriteSheet.getSprite(matrix[y]![x]?.[1]!, matrix[y]![x]?.[0]!)!
+                const solidity = matrix[y]![x]?.[2]!
                 this.tilemap.getTile(x, y).addGraphic(graphic)
+                this.tilemap.getTile(x, y).solid = solidity
             }
         }
     }
@@ -83,8 +105,8 @@ export class MapTest extends Scene {
 
     override onActivate(_context: SceneActivationContext<unknown>): void {
         this.add(this.tilemap)
-        this.add(this.player)
-        this.player.pos.setTo(this.mapWidth/4, this.mapHeight/4)
+        this.spawnPlayer()
+        //this.player.pos.setTo(this.mapWidth / 4, this.mapHeight / 4)
         this.tilemap.scale.setTo(1, 1)
         this.camera.zoom = 1
     }
