@@ -21,6 +21,9 @@ export class WebSocketManager {
         this.io.on('allCharacters', (data) => {
             EventManager.getInstance().emit('allCharacters', data)
         })
+        this.io.on('map-response', (data) => {
+            EventManager.getInstance().emit('mapGenerated', data)
+        })
     }
 
     public static getInstance(
@@ -43,5 +46,13 @@ export class WebSocketManager {
             'username': username, 'position': { 'x': position.x, 'y': position.y }
         }
         this.io.emit('msg', data)
+    }
+
+    public sendMapRequest(height: number, width: number) {
+        const data = {
+            'tilemapRows': height,
+            'tilemapColumns': width,
+        }
+        this.io.emit('map-request', data)
     }
 }

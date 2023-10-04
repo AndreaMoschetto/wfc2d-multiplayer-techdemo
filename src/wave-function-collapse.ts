@@ -6,7 +6,7 @@ class WFCSlot {
     public chosenOne: string
     private solid: boolean
 
-    constructor(y: number, x: number, tilesCols: number, tilesRows: number) {
+    constructor(y: number, x: number) {
         this.y = y
         this.x = x
         this.chosenOne = ''
@@ -69,14 +69,14 @@ class WFCMatrix {
     private columns: number
     private rows: number
 
-    constructor(height: number, width: number, tilesCols: number, tilesRows: number) {
+    constructor(height: number, width: number) {
         this.columns = width
         this.rows = height
         this.matrix = new Array<Array<WFCSlot>>(this.rows)
         for (let y = 0; y < this.rows; y++) {
             this.matrix[y] = new Array<WFCSlot>(this.columns)
             for (let x = 0; x < this.columns; x++) {
-                this.matrix[y]![x] = new WFCSlot(y, x, tilesCols, tilesRows)
+                this.matrix[y]![x] = new WFCSlot(y, x)
             }
         }
     }
@@ -178,8 +178,8 @@ class WFCMatrix {
 
 export class WaveFunctionCollapse {
     matrix!: WFCMatrix
-    constructor(height: number, width: number, tilesCols: number, tilesRows: number) {
-        this.matrix = new WFCMatrix(height, width, tilesCols, tilesRows)
+    constructor(height: number, width: number) {
+        this.matrix = new WFCMatrix(height, width)
     }
 
     public resolve(): [number, number, boolean][][] {
@@ -234,46 +234,6 @@ export class WaveFunctionCollapse {
 
 
 class NeighbourConstraints {
-    private static __roles: Record<string, string[][]> = {
-        "0_0": [['5_1'], ['0_1', '0_2'], ['1_0', '2_0'], ['4_2']],
-        "0_1": [['5_1'], ['0_2', '0_1'], ['1_1', '2_1'], ['0_0', '0_1']],
-        "0_2": [['5_1'], ['4_1'], ['1_2', '2_2'], ['0_0', '0_1']],
-
-        "1_0": [['0_0', '1_0'], ['1_1', '2_1'], ['1_0', '2_0'], ['4_2']],
-        "1_1": [['1_1', '0_1'], ['1_1', '1_2'], ['1_1', '2_1'], ['1_1', '1_0']],
-        "1_2": [['0_2', '1_2'], ['4_0'], ['1_2', '2_2'], ['1_1', '0_1']],
-
-        "2_0": [['1_0', '2_0'], ['2_1', '2_2'], ['3_1'], ['4_2']],
-        "2_1": [['1_1', '0_1'], ['2_1', '2_2'], ['3_1'], ['2_1', '2_0']],
-        "2_2": [['1_2', '0_2'], ['4_0'], ['3_2'], ['2_1', '2_0']],
-
-        "3_0": [['2_0'], ['3_1', '3_2'], ['4_0', '5_0'], ['1_2']],
-        "3_1": [['2_1'], ['3_1', '3_2'], ['4_1'], ['3_1', '3_0']],
-        "3_2": [['2_1'], ['1_0'], ['4_2', '5_2'], ['3_1', '3_0']],
-
-        "4_0": [['4_0', '3_0'], ['4_1', '4_2'], ['4_0', '5_0'], ['1_2']],
-        "4_1": [['4_1', '3_1'], ['4_1', '4_2'], ['4_1', '5_1'], ['4_1', '4_0']],
-        "4_2": [['4_2', '3_2'], ['1_0'], ['4_2', '5_2'], ['4_1', '4_0']],
-
-        "5_0": [['4_0', '3_0'], ['5_1', '5_2'], ['0_1'], ['1_2']],
-        "5_1": [['4_1', '3_1'], ['5_1', '5_2'], ['0_1'], ['5_1', '5_0']],
-        "5_2": [['4_2', '3_2'], ['1_0'], ['0_1'], ['5_2', '5_1']],
-    }
-    private static _roles: Record<string, string[][]> = {
-        "0_0": [['4_1'], ['0_1', '0_2'], ['1_0', '2_0'], ['4_1']],
-        "0_1": [['4_1'], ['0_1', '0_2'], ['1_1', '2_1'], ['0_0', '0_1']],
-        "0_2": [['4_1'], ['4_1'], ['1_2', '2_2'], ['0_0', '0_1']],
-
-        "1_0": [['0_0', '1_0'], ['1_1', '1_2'], ['1_0', '2_0'], ['4_1']],
-        "1_1": [['1_1', '0_1'], ['1_1', '1_2'], ['1_1', '2_1'], ['1_1', '1_0']],
-        "1_2": [['0_2', '1_2'], ['4_1'], ['1_2', '2_2'], ['1_1', '1_0']],
-
-        "2_0": [['1_0', '0_0'], ['2_1', '2_2'], ['4_1'], ['4_1']],
-        "2_1": [['1_1', '0_1'], ['2_1', '2_2'], ['4_1'], ['2_1', '2_0']],
-        "2_2": [['1_2', '0_2'], ['4_1'], ['4_1'], ['2_1', '2_0']],
-
-        "4_1": [['4_1', '2_0', '2_1', '2_2'], ['4_1', '0_0', '1_0', '2_0'], ['4_1', '0_0', '0_1', '0_2'], ['4_1', '0_2', '1_2', '2_2']],
-    }
     private static roles: Record<string, { "adjacency": string[][], "solid": boolean }> = {
         "0_0": {
             "adjacency": [['4_1'], ['0_1', '0_2'], ['1_0', '2_0'], ['4_1']],
