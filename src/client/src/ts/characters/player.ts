@@ -1,4 +1,4 @@
-import { BoundingBox, Camera, CollisionType, Engine, Input } from "excalibur";
+import { CollisionType, Engine, Input } from "excalibur";
 import { WebSocketManager } from "@root/managers/websocket-manager";
 import { Character } from "@root/characters/character";
 

@@ -4,6 +4,7 @@ import { Server } from 'socket.io'
 import cors from 'cors'
 import path from 'path'
 import { SERVER_PORT } from './client/src/ts/settings'
+import { WaveFunctionCollapse } from './wave-function-collapse'
 
 const app = express()
 const httpServer = createServer(app)
@@ -44,6 +45,15 @@ io.on('connection', (socket) => {
         }
         console.log(data)
         socket.broadcast.emit('newmsg', data)
+    })
+
+    socket.on('map-request', (data) =>{
+        let wfc = new WaveFunctionCollapse(data.tilemapRows, data.tilemapColumns)
+        console.log('map-request: received')
+        const matrix = wfc.resolve()
+        console.log('sending matrix')
+        console.log(matrix)
+        socket.emit('map-response', matrix)
     })
 })
 httpServer.listen(SERVER_PORT)
