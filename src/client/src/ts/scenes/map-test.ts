@@ -19,8 +19,8 @@ export class MapTest extends Scene {
     public constructor() {
         super();
         this.tilemap = new TileMap({
-            rows: 20,
-            columns: 20,
+            rows: 30,
+            columns: 40,
             tileWidth: 32,
             tileHeight: 32,
         });
@@ -56,9 +56,11 @@ export class MapTest extends Scene {
         this.box = new BoundingBox(
             this.padding,
             this.padding,
-            this.mapWidth - this.screenWidth - this.padding,
-            this.mapHeight - this.screenHeight - this.padding
+            this.mapWidth - this.padding,
+            this.mapHeight - this.padding
         )
+        console.log(`screenWidth:${this.screenWidth}\nscreenHeight:${this.screenHeight}\nmapWidth:${this.mapWidth}\nmapHeight:${this.mapHeight}`)
+        console.log(this.box)
         this.produceMap()
     }
 
@@ -86,7 +88,7 @@ export class MapTest extends Scene {
     }
 
     private handleMapGenerated(matrix: [number, number, boolean][][]){
-        //this.remove(this.tilemap)
+        this.remove(this.tilemap)
         for (let y = 0; y < this.tilemap.rows; y++) {
             for (let x = 0; x < this.tilemap.columns; x++) {
                 const [mat_x, mat_y] = [matrix[y]![x]?.[1]!, matrix[y]![x]?.[0]!]
@@ -111,6 +113,6 @@ export class MapTest extends Scene {
 
     override onActivate(_context: SceneActivationContext<unknown>): void {
         this.tilemap.scale.setTo(1, 1)
-        this.camera.zoom = 2
+        this.camera.zoom = 1.5
     }
 }
