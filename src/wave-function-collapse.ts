@@ -27,7 +27,7 @@ class WFCSlot {
                 return adjacencyFilter.includes(elem)
             }
         )
-        if (this.getEntropy() == 1){
+        if (this.getEntropy() == 1) {
             this.chosenOne = this.possibleTiles[0] ?? ''
             this.solid = NeighbourConstraints.getSolidity(this.chosenOne)
         }
@@ -54,7 +54,7 @@ class WFCSlot {
         //console.log(this.possibleTiles)
     }
 
-    public isSolid(): boolean{
+    public isSolid(): boolean {
         return this.solid
     }
 
@@ -236,45 +236,61 @@ export class WaveFunctionCollapse {
 class NeighbourConstraints {
     private static roles: Record<string, { "adjacency": string[][], "solid": boolean }> = {
         "0_0": {
-            "adjacency": [['4_1'], ['0_1', '0_2'], ['1_0', '2_0'], ['4_1']],
+            "adjacency": [['4_1'], ['0_1', '0_2', '5_2'], ['1_0', '2_0', '5_2'], ['4_1']],
             "solid": true
         },
         "0_1": {
-            "adjacency": [['4_1'], ['0_1', '0_2'], ['1_1', '2_1'], ['0_0', '0_1']],
+            "adjacency": [['4_1'], ['0_1', '0_2', '5_2'], ['1_1', '2_1'], ['0_0', '0_1', '5_0']],
             "solid": true
         },
         "0_2": {
-            "adjacency": [['4_1'], ['4_1'], ['1_2', '2_2'], ['0_0', '0_1']],
+            "adjacency": [['4_1'], ['4_1'], ['1_2', '2_2', '5_0'], ['0_0', '0_1', '5_0']],
             "solid": true
         },
         "1_0": {
-            "adjacency": [['0_0', '1_0'], ['1_1', '1_2'], ['1_0', '2_0'], ['4_1']],
+            "adjacency": [['0_0', '1_0', '3_2'], ['1_1', '1_2'], ['1_0', '2_0', '5_2'], ['4_1']],
             "solid": true
         },
         "1_1": {
-            "adjacency": [['1_1', '0_1'], ['1_1', '1_2'], ['1_1', '2_1'], ['1_1', '1_0']],
+            "adjacency": [['1_1', '0_1', '5_2', '5_0'], ['1_1', '1_2', '5_0', '3_0'], ['1_1', '2_1', '3_0', '3_2'], ['1_1', '1_0', '3_2', '5_2']],
             "solid": true
         },
         "1_2": {
-            "adjacency": [['0_2', '1_2'], ['4_1'], ['1_2', '2_2'], ['1_1', '1_0']],
+            "adjacency": [['0_2', '1_2', '3_0'], ['4_1'], ['1_2', '2_2', '5_0'], ['1_1', '1_0']],
             "solid": true
         },
         "2_0": {
-            "adjacency": [['1_0', '0_0'], ['2_1', '2_2'], ['4_1'], ['4_1']],
+            "adjacency": [['1_0', '0_0', '3_2'], ['2_1', '2_2', '3_2'], ['4_1'], ['4_1']],
             "solid": true
         },
         "2_1": {
-            "adjacency": [['1_1', '0_1'], ['2_1', '2_2'], ['4_1'], ['2_1', '2_0']],
+            "adjacency": [['1_1', '0_1'], ['2_1', '2_2', '3_2'], ['4_1'], ['2_1', '2_0', '3_0']],
             "solid": true
         },
         "2_2": {
-            "adjacency": [['1_2', '0_2'], ['4_1'], ['4_1'], ['2_1', '2_0']],
+            "adjacency": [['1_2', '0_2', '3_0'], ['4_1'], ['4_1'], ['2_1', '2_0', '3_0']],
             "solid": true
         },
         "4_1": {
             "adjacency": [['4_1', '2_0', '2_1', '2_2'], ['4_1', '0_0', '1_0', '2_0'], ['4_1', '0_0', '0_1', '0_2'], ['4_1', '0_2', '1_2', '2_2']],
             "solid": false
         },
+        "3_0": {
+            "adjacency": [['1_1'], ['2_1', '2_2'], ['1_2'], ['2_2']],
+            "solid": true
+        },
+        "3_2": {
+            "adjacency": [['1_1'], ['1_1'], ['1_0', '2_0'], ['2_1', '2_0']],
+            "solid": true
+        },
+        "5_0": {
+            "adjacency": [['0_2', '1_2'], ['0_1', '0_2'], ['1_1'], ['1_1']],
+            "solid": true
+        },
+        "5_2": {
+            "adjacency": [['0_0', '1_0'], ['1_1'], ['1_1'], ['0_0', '0_1']],
+            "solid": true
+        }
     };
 
 
@@ -282,7 +298,7 @@ class NeighbourConstraints {
         return this.roles[id]!['adjacency'] ?? []
     }
 
-    public static getSolidity(id: string): boolean{
+    public static getSolidity(id: string): boolean {
         return this.roles[id]!['solid'] ?? false
     }
 
