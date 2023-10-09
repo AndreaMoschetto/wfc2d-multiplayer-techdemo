@@ -2,12 +2,13 @@ import { Player } from "@root/characters/player";
 import { EventManager } from "@root/managers/event-manager";
 import { WebSocketManager } from "@root/managers/websocket-manager";
 import { Images } from "@root/resources";
-import { BoundingBox, Engine, Input, Scene, SceneActivationContext, SpriteSheet, Tile, TileMap } from "excalibur";
+import { BoundingBox, Engine, Input, SceneActivationContext, SpriteSheet, Tile, TileMap } from "excalibur";
+import { Room } from "./room";
 
-export class MapTest extends Scene {
+export class MapTest extends Room {
     private tilemap: TileMap
     private tilemapSpriteSheet!: SpriteSheet
-    private player: Player
+    //private player: Player
 
     private padding!: number
     private screenWidth!: number
@@ -30,6 +31,7 @@ export class MapTest extends Scene {
     }
 
     override onInitialize(_engine: Engine): void {
+        super.onInitialize(_engine)
         EventManager.getInstance().on('mapGenerated', this.handleMapGenerated.bind(this))
 
         this.tilemapSpriteSheet = SpriteSheet.fromImageSource({
@@ -112,6 +114,7 @@ export class MapTest extends Scene {
     }
 
     override onActivate(_context: SceneActivationContext<unknown>): void {
+        super.onActivate(_context)
         this.tilemap.scale.setTo(1, 1)
         this.camera.zoom = 1.5
     }

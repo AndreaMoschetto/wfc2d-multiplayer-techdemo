@@ -4,19 +4,20 @@ import { Character } from "@root/characters/character";
 import { EventManager } from "@root/managers/event-manager";
 
 export class Room extends Scene {
-    private player: Player | null = null
+    protected player!: Player
     private characters: Character[]
 
     constructor(){
         super()
         this.characters = []
+        
     }
 
     override onActivate(_context: SceneActivationContext<unknown>): void {
         EventManager.getInstance().on('characterMoved', this.handleOnUserMoved.bind(this))
         EventManager.getInstance().on('allCharacters', this.handleOnAllCharacters.bind(this))
         this.player = new Player(<string>_context.data)
-        this.add(this.player)
+        //this.add(this.player)
     }
 
     public handleOnAllCharacters(data: any){
