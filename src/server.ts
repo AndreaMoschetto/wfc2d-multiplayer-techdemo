@@ -20,7 +20,7 @@ app.use(express.json())
 app.use(express.static(clientPath))
 app.use(express.static(assetsPath))
 const users: { username: string, position: { x: number, y: number }}[] = []
-
+let matrix: [number, number, boolean][][] = []
 io.on('connection', (socket) => {
     console.log('A user connected')
     /*socket.on('setUsername', (data) => {
@@ -48,9 +48,11 @@ io.on('connection', (socket) => {
     })
 
     socket.on('map-request', (data) =>{
-        let wfc = new WaveFunctionCollapse(data.tilemapRows, data.tilemapColumns)
+        if(matrix.length == 0){
+            let wfc = new WaveFunctionCollapse(data.tilemapRows, data.tilemapColumns)
+            matrix = wfc.resolve()
+        }
         console.log('map-request: received')
-        const matrix = wfc.resolve()
         console.log('sending matrix')
         console.log(matrix)
         socket.emit('map-response', matrix)
