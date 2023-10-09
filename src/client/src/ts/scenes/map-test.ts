@@ -1,4 +1,3 @@
-import { Player } from "@root/characters/player";
 import { EventManager } from "@root/managers/event-manager";
 import { WebSocketManager } from "@root/managers/websocket-manager";
 import { Images } from "@root/resources";
@@ -27,7 +26,7 @@ export class MapTest extends Room {
         });
 
 
-        this.player = new Player("bob")
+        //this.player = new Player("bob")
     }
 
     override onInitialize(_engine: Engine): void {

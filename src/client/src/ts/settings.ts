@@ -5,7 +5,7 @@ export const RES_HEIGHT = 600
 //Scene names
 export const MAINMENU = 'main-menu'
 export const ROOM = 'room'
-export const TEST_ROOM = 'map-test'
+export const MAP_TEST = 'map-test'
 
 //WebSocket settings
 export const SERVER_ADDR = 'localhost'

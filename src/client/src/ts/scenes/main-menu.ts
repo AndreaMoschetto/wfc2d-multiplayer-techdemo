@@ -1,4 +1,4 @@
-import { ROOM } from "@root/settings";
+import { MAP_TEST, ROOM } from "@root/settings";
 import { Scene, SceneActivationContext } from "excalibur";
 
 export class MainMenu extends Scene {
@@ -17,7 +17,7 @@ export class MainMenu extends Scene {
         btnStart.className = 'button button--start'
         btnStart.onclick = (e) => {
             e.preventDefault()
-            _context.engine.goToScene(ROOM, inputField.value)
+            _context.engine.goToScene(MAP_TEST, inputField.value)
         }
 
         this.ui?.appendChild(inputField)
