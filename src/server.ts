@@ -32,7 +32,7 @@ io.on('connection', (socket) => {
             socket.emit('usernames', { usernames: users })
         }
     });*/
-    socket.on('msg', (data) => {
+    socket.on('player-move', (data) => {
         //Send message to everyone
         let index = users.findIndex(a => a.username === data.username)
         if (index == -1) {
@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
             users[index]!.position.y = data.position.y
         }
         console.log(data)
-        socket.broadcast.emit('newmsg', data)
+        socket.broadcast.emit('character-move', data)
     })
 
     socket.on('map-request', (data) =>{

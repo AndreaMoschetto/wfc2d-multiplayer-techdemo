@@ -15,7 +15,7 @@ export class WebSocketManager {
         this.ipaddr = _ipaddr;
         this.io = io(`http://${this.ipaddr}:${this.port}`)
 
-        this.io.on('newmsg', (data) => {
+        this.io.on('character-move', (data) => {
             EventManager.getInstance().emit('characterMoved', data)
         })
         this.io.on('allCharacters', (data) => {
@@ -45,7 +45,7 @@ export class WebSocketManager {
         const data = {
             'username': username, 'position': { 'x': position.x, 'y': position.y }
         }
-        this.io.emit('msg', data)
+        this.io.emit('player-move', data)
     }
 
     public sendMapRequest(height: number, width: number) {
