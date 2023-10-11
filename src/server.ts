@@ -44,9 +44,9 @@ io.on('connection', (socket) => {
             matrix = wfc.resolve()
         }
         console.log('map-request: received')
-        console.log('sending matrix')
-        console.log(matrix)
+        //console.log(matrix)
         socket.emit('map-response', matrix)
+        console.log('sent matrix')
     })
 })
 httpServer.listen(SERVER_PORT)
