@@ -134,3 +134,6 @@ dist
 
 # Custom
 www/
+
+.vscode/
+.vscode/*

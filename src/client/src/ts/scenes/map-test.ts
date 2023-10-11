@@ -108,7 +108,7 @@ export class MapTest extends Room {
 
     override onPostUpdate(_engine: Engine, _delta: number): void {
         if (_engine.input.keyboard.isHeld(Input.Keys.R)) {
-            this.produceMap()
+            this.spawnPlayer()
         }
     }
 

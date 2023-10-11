@@ -23,15 +23,6 @@ const users: { username: string, position: { x: number, y: number }}[] = []
 let matrix: [number, number, boolean][][] = []
 io.on('connection', (socket) => {
     console.log('A user connected')
-    /*socket.on('setUsername', (data) => {
-        console.log(data);
-        if (users.indexOf(data) > -1) {
-            socket.emit('userExists', data + ' username is taken! Try some other username.')
-        } else {
-            users.push(data)
-            socket.emit('usernames', { usernames: users })
-        }
-    });*/
     socket.on('player-move', (data) => {
         //Send message to everyone
         let index = users.findIndex(a => a.username === data.username)
@@ -43,7 +34,7 @@ io.on('connection', (socket) => {
             users[index]!.position.x = data.position.x
             users[index]!.position.y = data.position.y
         }
-        console.log(data)
+        //console.log(data)
         socket.broadcast.emit('character-move', data)
     })
 
