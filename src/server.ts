@@ -19,18 +19,18 @@ app.use(express.json())
 
 app.use(express.static(clientPath))
 app.use(express.static(assetsPath))
-const users: { username: string, position: { x: number, y: number }}[] = []
+let users: { username: string, position: { x: number, y: number } }[] = []
 let matrix: [number, number, boolean][][] = []
 io.on('connection', (socket) => {
-    console.log('A user connected')
     socket.on('player-move', (data) => {
         //Send message to everyone
         let index = users.findIndex(a => a.username === data.username)
         if (index == -1) {
+            console.log(`User: ${data['username']} connected`)
             if (users.length > 0) socket.emit('allCharacters', users)
             users.push(data)
         }
-        else{
+        else {
             users[index]!.position.x = data.position.x
             users[index]!.position.y = data.position.y
         }
@@ -38,8 +38,8 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('character-move', data)
     })
 
-    socket.on('map-request', (data) =>{
-        if(matrix.length == 0){
+    socket.on('map-request', (data) => {
+        if (matrix.length == 0) {
             let wfc = new WaveFunctionCollapse(data.tilemapRows, data.tilemapColumns)
             matrix = wfc.resolve()
         }
@@ -47,6 +47,13 @@ io.on('connection', (socket) => {
         //console.log(matrix)
         socket.emit('map-response', matrix)
         console.log('sent matrix')
+    })
+
+    socket.on('user-disconnected', (data) => {
+        console.log(`user: ${data['username']} disconnected`)
+        const user = users.filter(a => a.username === data['username']).pop()!
+        users = users.filter(a => a !== user)
+        socket.broadcast.emit('character-disconnected', data)
     })
 })
 httpServer.listen(SERVER_PORT)
