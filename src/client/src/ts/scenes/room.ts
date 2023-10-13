@@ -14,7 +14,7 @@ export class Room extends Scene {
     }
 
     override onActivate(_context: SceneActivationContext<unknown>): void {
-        EventManager.getInstance().on('characterMoved', this.handleOnUserMoved.bind(this))
+        EventManager.getInstance().on('characterMoved', this.handleOnCharacterMoved.bind(this))
         EventManager.getInstance().on('allCharacters', this.handleOnAllCharacters.bind(this))
         this.player = new Player(<string>_context.data)
         //this.add(this.player)
@@ -27,13 +27,12 @@ export class Room extends Scene {
             const y = characterInfo.position.y
 
             let character = new Character(username, x, y)
-            //character.pos.setTo(x, y)
             this.add(character)
             this.characters.push(character)
         });
     }
 
-    public handleOnUserMoved(data: any){
+    public handleOnCharacterMoved(data: any){
         const username: string = data.username
         const x: number = data.position.x
         const y: number = data.position.y
