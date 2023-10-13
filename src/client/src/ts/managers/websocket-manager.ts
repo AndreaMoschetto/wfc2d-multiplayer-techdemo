@@ -24,6 +24,9 @@ export class WebSocketManager {
         this.io.on('map-response', (data) => {
             EventManager.getInstance().emit('mapGenerated', data)
         })
+        this.io.on('character-disconnected', (data) => {
+            EventManager.getInstance().emit('characterDisconnected', data)
+        })
     }
 
     public static getInstance(
@@ -54,5 +57,8 @@ export class WebSocketManager {
             'tilemapColumns': width,
         }
         this.io.emit('map-request', data)
+    }
+    public sendDisconnection(username: string){
+        this.io.emit('user-disconnected',{'username': username})
     }
 }
