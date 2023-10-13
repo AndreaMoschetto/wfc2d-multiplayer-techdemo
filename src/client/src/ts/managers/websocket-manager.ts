@@ -27,6 +27,8 @@ export class WebSocketManager {
         this.io.on('character-disconnected', (data) => {
             EventManager.getInstance().emit('characterDisconnected', data)
         })
+        this.io.on('username-accepted', () =>{EventManager.getInstance().emit('usernameAccepted')})
+        this.io.on('username-error', () =>{EventManager.getInstance().emit('usernameError')})
     }
 
     public static getInstance(
@@ -40,8 +42,7 @@ export class WebSocketManager {
     }
 
     public setUsername(username: string) {
-        this.io.emit('setUsername', username)
-        EventManager.getInstance().emit('newUser', username)
+        this.io.emit('set-username', { 'username': username })
     }
 
     public sendPosition(username: string, position: Vector) {
@@ -58,7 +59,7 @@ export class WebSocketManager {
         }
         this.io.emit('map-request', data)
     }
-    public sendDisconnection(username: string){
-        this.io.emit('user-disconnected',{'username': username})
+    public sendDisconnection(username: string) {
+        this.io.emit('user-disconnected', { 'username': username })
     }
 }

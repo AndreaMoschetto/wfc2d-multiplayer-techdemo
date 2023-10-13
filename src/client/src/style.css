@@ -100,3 +100,8 @@ body {
     font-size: 24px;
     text-align: center;
 }
+
+.error-msg{
+    color: red;
+    font-size: small;
+}

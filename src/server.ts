@@ -22,6 +22,17 @@ app.use(express.static(assetsPath))
 let users: { username: string, position: { x: number, y: number } }[] = []
 let matrix: [number, number, boolean][][] = []
 io.on('connection', (socket) => {
+
+    socket.on('set-username', (data) => {
+        let index = users.findIndex(a => a.username === data.username)
+        if (index == -1) {
+            socket.emit('username-accepted')
+        }
+        else{
+            socket.emit('username-error')
+        }
+    })
+
     socket.on('player-move', (data) => {
         //Send message to everyone
         let index = users.findIndex(a => a.username === data.username)

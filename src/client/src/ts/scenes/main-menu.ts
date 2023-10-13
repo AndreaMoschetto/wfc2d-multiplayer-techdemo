@@ -1,3 +1,5 @@
+import { EventManager } from "@root/managers/event-manager";
+import { WebSocketManager } from "@root/managers/websocket-manager";
 import { MAP_TEST, ROOM } from "@root/settings";
 import { Scene, SceneActivationContext } from "excalibur";
 
@@ -15,13 +17,22 @@ export class MainMenu extends Scene {
         const btnStart = document.createElement('button')
         btnStart.innerHTML = 'Go!'
         btnStart.className = 'button button--start'
-        btnStart.onclick = (e) => {
+
+        const errorMsg = document.createElement('p')
+        errorMsg.innerHTML = '*nickname must be unique, try a different one'
+        errorMsg.className = 'error-msg'
+        errorMsg.hidden = true
+
+        btnStart.onclick = function (e){
             e.preventDefault()
-            _context.engine.goToScene(MAP_TEST, inputField.value)
+            WebSocketManager.getInstance().setUsername(inputField.value)
         }
+        EventManager.getInstance().on('usernameError', () => errorMsg.hidden = false)
+        EventManager.getInstance().on('usernameAccepted', () => _context.engine.goToScene(MAP_TEST, inputField.value))
 
         this.ui?.appendChild(inputField)
         this.ui?.appendChild(btnStart)
+        this.ui?.appendChild(errorMsg)
 
     }
 
