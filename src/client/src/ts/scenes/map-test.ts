@@ -7,7 +7,6 @@ import { Room } from "./room";
 export class MapTest extends Room {
     private tilemap: TileMap
     private tilemapSpriteSheet!: SpriteSheet
-    //private player: Player
 
     private padding!: number
     private screenWidth!: number
@@ -24,9 +23,6 @@ export class MapTest extends Room {
             tileWidth: 32,
             tileHeight: 32,
         });
-
-
-        //this.player = new Player("bob")
     }
 
     override onInitialize(_engine: Engine): void {

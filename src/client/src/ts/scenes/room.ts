@@ -23,8 +23,6 @@ export class Room extends Scene {
 
         this.player = new Player(<string>_context.data)
         this.playerCounter.innerHTML = '1'
-
-        //this.add(this.player)
     }
 
     public handleOnBeforeUnload(){

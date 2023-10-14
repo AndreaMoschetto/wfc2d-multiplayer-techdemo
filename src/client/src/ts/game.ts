@@ -1,4 +1,4 @@
-import { Color, DisplayMode, Engine, Input } from "excalibur";
+import { Color, Engine, Input } from "excalibur";
 import { MainMenu } from "@root/scenes/main-menu";
 import { Room } from "@root/scenes/room";
 import { MAINMENU, RES_HEIGHT as GAME_HEIGHT, RES_WIDTH as GAME_WIDTH, ROOM, MAP_TEST } from "@root/settings";

@@ -1,6 +1,6 @@
 import { EventManager } from "@root/managers/event-manager";
 import { WebSocketManager } from "@root/managers/websocket-manager";
-import { ErrorCode, MAP_TEST, ROOM } from "@root/settings";
+import { ErrorCode, MAP_TEST} from "@root/settings";
 import { Scene, SceneActivationContext } from "excalibur";
 
 export class MainMenu extends Scene {

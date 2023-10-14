@@ -35,7 +35,6 @@ io.on('connection', (socket) => {
     })
 
     socket.on('player-move', (data) => {
-        //Send message to everyone
         let index = users.findIndex(a => a.username === data.username)
         if (index == -1) {
             console.log(`User: ${data['username']} connected`)
@@ -46,7 +45,6 @@ io.on('connection', (socket) => {
             users[index]!.position.x = data.position.x
             users[index]!.position.y = data.position.y
         }
-        //console.log(data)
         socket.broadcast.emit('character-move', data)
     })
 
@@ -56,7 +54,6 @@ io.on('connection', (socket) => {
             matrix = wfc.resolve()
         }
         console.log('map-request: received')
-        //console.log(matrix)
         socket.emit('map-response', matrix)
         console.log('sent matrix')
     })
