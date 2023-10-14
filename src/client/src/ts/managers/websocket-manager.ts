@@ -28,7 +28,7 @@ export class WebSocketManager {
             EventManager.getInstance().emit('characterDisconnected', data)
         })
         this.io.on('username-accepted', () =>{EventManager.getInstance().emit('usernameAccepted')})
-        this.io.on('username-error', () =>{EventManager.getInstance().emit('usernameError')})
+        this.io.on('username-error', (data) =>{EventManager.getInstance().emit('usernameError', data)})
     }
 
     public static getInstance(

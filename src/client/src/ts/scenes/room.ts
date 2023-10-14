@@ -12,7 +12,7 @@ export class Room extends Scene {
     constructor() {
         super()
         this.characters = []
-        this.playerCounter = document.getElementById("player-conter")!
+        this.playerCounter = document.getElementById("player-counter")!
     }
 
     override onActivate(_context: SceneActivationContext<unknown>): void {

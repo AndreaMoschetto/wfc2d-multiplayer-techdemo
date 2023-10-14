@@ -3,7 +3,7 @@ import express from 'express'
 import { Server } from 'socket.io'
 import cors from 'cors'
 import path from 'path'
-import { SERVER_PORT } from './client/src/ts/settings'
+import { ErrorCode, MAX_USERS, SERVER_PORT } from './client/src/ts/settings'
 import { WaveFunctionCollapse } from './wave-function-collapse'
 
 const app = express()
@@ -24,13 +24,14 @@ let matrix: [number, number, boolean][][] = []
 io.on('connection', (socket) => {
 
     socket.on('set-username', (data) => {
-        let index = users.findIndex(a => a.username === data.username)
-        if (index == -1) {
-            socket.emit('username-accepted')
+        if (users.length < MAX_USERS) {
+            let index = users.findIndex(a => a.username === data.username)
+            if (index == -1) {
+                socket.emit('username-accepted')
+            }
+            else socket.emit('username-error', { 'error': ErrorCode.USERNAME_ALREADY_EXISTS })
         }
-        else{
-            socket.emit('username-error')
-        }
+        else socket.emit('username-error', { 'error': ErrorCode.ROOM_IS_FULL })
     })
 
     socket.on('player-move', (data) => {

@@ -16,8 +16,8 @@
             </div>
             <p>This tech demo has been developed with the main purpose of studing:</p>
             <ul>
-                <li>Wave Function Collapse algorithm</li>
-                <li>Web Socket technology</li>
+                <li><b>Wave Function Collapse</b> algorithm for map generation</li>
+                <li><b>Web Socket</b> technology for a multiplayer gameplay</li>
             </ul>
             <p>This little project is a pretty way to make the two things work together.</p>
             <h2>>how to play</h2>
@@ -32,9 +32,11 @@
         <div class="game-container">
             <canvas id="game"></canvas>
             <div id="ui"></div>
-            <p> #Online Players: <span id="player-conter">-</span></p>
+            <p> #Online Players: <span id="player-counter">-</span> / <span id="player-limit">-</span></p>
         </div>
-        
+        <div class="phone-alert">
+            <p>game not available on this device</p>
+        </div>
     </div>
 
     <script type="module" src="./ts/main.ts"></script>
