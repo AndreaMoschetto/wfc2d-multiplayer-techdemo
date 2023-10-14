@@ -10,7 +10,7 @@ export const MAP_TEST = 'map-test'
 //WebSocket settings
 export const SERVER_ADDR = 'localhost'
 export const SERVER_PORT = 7777
-export const MAX_USERS = 2
+export const MAX_USERS = 5
 
 //error codes
 export enum ErrorCode{
