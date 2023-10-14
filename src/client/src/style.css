@@ -4,10 +4,11 @@ body {
     font-size: larger;
 }
 
-#center{
+#center {
     text-align: center;
 }
-#game{
+
+#game {
     border: 2px solid black;
 }
 
@@ -101,7 +102,32 @@ body {
     text-align: center;
 }
 
-.error-msg{
+.error-msg {
     color: red;
     font-size: small;
+}
+
+
+/* Stili di base per dispositivi con larghezza schermo inferiore a 600px */
+@media (max-width: 800px) {
+    .page-container {
+        flex-direction: column;
+    }
+
+    .game-container,#excalibur-play-root {
+        display: none;
+    }
+    .phone-alert{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: black;
+        color: white;
+    }
+}
+
+@media (min-width: 801px) {
+    .phone-alert{
+        display: none;
+    }
 }
