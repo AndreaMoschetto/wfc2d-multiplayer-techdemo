@@ -15,12 +15,20 @@ export class WebSocketManager {
         this.ipaddr = _ipaddr;
         this.io = io(`http://${this.ipaddr}:${this.port}`)
 
-        this.io.on('newmsg', (data) => {
+        this.io.on('character-move', (data) => {
             EventManager.getInstance().emit('characterMoved', data)
         })
         this.io.on('allCharacters', (data) => {
             EventManager.getInstance().emit('allCharacters', data)
         })
+        this.io.on('map-response', (data) => {
+            EventManager.getInstance().emit('mapGenerated', data)
+        })
+        this.io.on('character-disconnected', (data) => {
+            EventManager.getInstance().emit('characterDisconnected', data)
+        })
+        this.io.on('username-accepted', () =>{EventManager.getInstance().emit('usernameAccepted')})
+        this.io.on('username-error', (data) =>{EventManager.getInstance().emit('usernameError', data)})
     }
 
     public static getInstance(
@@ -34,14 +42,24 @@ export class WebSocketManager {
     }
 
     public setUsername(username: string) {
-        this.io.emit('setUsername', username)
-        EventManager.getInstance().emit('newUser', username)
+        this.io.emit('set-username', { 'username': username })
     }
 
     public sendPosition(username: string, position: Vector) {
         const data = {
             'username': username, 'position': { 'x': position.x, 'y': position.y }
         }
-        this.io.emit('msg', data)
+        this.io.emit('player-move', data)
+    }
+
+    public sendMapRequest(height: number, width: number) {
+        const data = {
+            'tilemapRows': height,
+            'tilemapColumns': width,
+        }
+        this.io.emit('map-request', data)
+    }
+    public sendDisconnection(username: string) {
+        this.io.emit('user-disconnected', { 'username': username })
     }
 }

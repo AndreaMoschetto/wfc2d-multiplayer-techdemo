@@ -1,4 +1,6 @@
-import { ROOM } from "@root/settings";
+import { EventManager } from "@root/managers/event-manager";
+import { WebSocketManager } from "@root/managers/websocket-manager";
+import { ErrorCode, MAP_TEST, ROOM } from "@root/settings";
 import { Scene, SceneActivationContext } from "excalibur";
 
 export class MainMenu extends Scene {
@@ -8,20 +10,42 @@ export class MainMenu extends Scene {
         this.ui.classList.add('MainMenu')
 
         const inputField = document.createElement('input')
-        inputField.type='text'
-        inputField.placeholder='write your username'
-        inputField.className= 'username-input'
+        inputField.type = 'text'
+        inputField.placeholder = 'write your username'
+        inputField.className = 'username-input'
 
         const btnStart = document.createElement('button')
         btnStart.innerHTML = 'Go!'
         btnStart.className = 'button button--start'
-        btnStart.onclick = (e) => {
+
+        const errorMsg = document.createElement('p')
+
+        errorMsg.className = 'error-msg'
+        errorMsg.hidden = true
+        document.addEventListener('keydown', (event) => {
+            if(event.key === 'Enter'){
+                btnStart.click()
+            }
+        })
+        btnStart.onclick = function (e) {
             e.preventDefault()
-            _context.engine.goToScene(ROOM, inputField.value)
+            if (inputField.value != "")
+                WebSocketManager.getInstance().setUsername(inputField.value)
         }
+        EventManager.getInstance().on('usernameError', (data: any) => {
+            const errorCode = data['error']
+            errorMsg.hidden = false
+            console.log(errorCode)
+            if (errorCode === ErrorCode.ROOM_IS_FULL)
+                errorMsg.innerHTML = '*there are too many users, retry later'
+            else if (errorCode === ErrorCode.USERNAME_ALREADY_EXISTS)
+                errorMsg.innerHTML = '*nickname must be unique, try a different one'
+        })
+        EventManager.getInstance().on('usernameAccepted', () => _context.engine.goToScene(MAP_TEST, inputField.value))
 
         this.ui?.appendChild(inputField)
         this.ui?.appendChild(btnStart)
+        this.ui?.appendChild(errorMsg)
 
     }
 
