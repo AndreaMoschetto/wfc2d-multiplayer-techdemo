@@ -1,19 +1,19 @@
 <a id="top"></a>
-# WFC2D-Multiplayer techdemo
+# 🌆 WFC2D-Multiplayer techdemo
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ![Alt Text](./src/client/assets/wfc-screenshot.png)
-## Purpose
+## 📜Purpose
 The WFC2D Multiplayer Techdemo project is an exam project developed for the study of procedural map generation using the Wave Function Collapse and the implementation of WebSocket technology to support online multiplayer gameplay.
 
-## Requirements
+## 🧾Requirements
 Before getting started, make sure you meet the following requirements:
 - Node.js
 - npm (Node Package Manager)
   
 You can follow [this guide](https://nodejs.dev/en/learn/how-to-install-nodejs/) to install them
 
-## Installation
+## 💻Installation
 Follow these steps to install the project:
 
 1. Clone the repository:
@@ -31,7 +31,7 @@ Follow these steps to install the project:
    npm install
    ```
 
-## Usage
+## 🕹️Usage
 To run the project on your local machine, follow these steps:
 
 1. Ensure you are in the project directory.
@@ -43,11 +43,11 @@ To run the project on your local machine, follow these steps:
 
 3. Open your web browser and go to `http://localhost:7777` to start playing.
 
-### Configuration
+### ⚙️Configuration
 You can modify various parameters in the `src/client/src/ts/settings.ts` file, such as the port number and other configuration options.
 Default configurations might work quite well.
 
-## Contributions
+## 🙋‍♂️Contributions
 If you wish to contribute to this project, you can follow these steps:
 
 1. Fork the repository on GitHub.
@@ -73,9 +73,9 @@ If you wish to contribute to this project, you can follow these steps:
 
 7. Create a Pull Request on the original repository.
 
-## License
+## 🎫License
 This project is licensed under the MIT - see the [LICENSE](LICENSE) file for details
 or click the badge [on top of the page](#top) 
 
-##### Attributions
+##### 🙇‍♂️Attributions
 Thanks to [Pixel Frog](https://pixelfrog-assets.itch.io) for creating Sensational assets
