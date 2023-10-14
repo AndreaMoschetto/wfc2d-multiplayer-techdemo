@@ -4,7 +4,7 @@
   "description": "A techdemo game realized to study the Wave Function Collapse and WebSockets in typescript",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Niria/wfc2d-multiplayer-techdemo"
+    "url": "https://github.com/andreamoschetto/wfc2d-multiplayer-techdemo"
   },
   "scripts": {
     "build-client": "parcel build src/client/src/index.html --dist-dir src/www",
