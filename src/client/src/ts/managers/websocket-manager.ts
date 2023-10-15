@@ -1,6 +1,6 @@
 import { Vector } from "excalibur"
 import { io, Socket } from "socket.io-client"
-import { SERVER_ADDR, SERVER_PORT } from "@root/settings"
+import { SERVER_PORT } from "@root/settings"
 import { EventManager } from "@root/managers/event-manager"
 
 export class WebSocketManager {
@@ -32,7 +32,7 @@ export class WebSocketManager {
     }
 
     public static getInstance(
-        _ipaddr: string = SERVER_ADDR,
+        _ipaddr: string = window.location.hostname,
         _port: number = SERVER_PORT
     ): WebSocketManager {
         if (!this.instance) {
