@@ -4,7 +4,7 @@
 
 ![Alt Text](./src/client/assets/wfc-screenshot.png)
 ## 📜Purpose
-The WFC2D Multiplayer Techdemo project is an exam project developed for the study of procedural map generation using the Wave Function Collapse and the implementation of WebSocket technology to support online multiplayer gameplay.
+The WFC2D Multiplayer Techdemo project is an exam project developed for the study of procedural map generation using the [Wave Function Collapse](https://github.com/mxgmn/WaveFunctionCollapse) and the implementation of WebSocket technology to support online multiplayer gameplay.
 
 ## 🧾Requirements
 Before getting started, make sure you meet the following requirements:
