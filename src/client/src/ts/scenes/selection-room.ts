@@ -3,7 +3,7 @@ import { WebSocketManager } from "@root/managers/websocket-manager";
 import { ErrorCode, MAP_ROOM} from "@root/settings";
 import { Scene, SceneActivationContext } from "excalibur";
 
-export class MainMenu extends Scene {
+export class SelectionMenu extends Scene {
     private ui!: HTMLElement
     override onActivate(_context: SceneActivationContext<unknown>): void {
         this.ui = document.getElementById('ui')!
@@ -11,7 +11,7 @@ export class MainMenu extends Scene {
 
         const inputField = document.createElement('input')
         inputField.type = 'text'
-        inputField.placeholder = 'write your username'
+        inputField.placeholder = 'GLGGLGLGL your username'
         inputField.className = 'username-input'
 
         const btnStart = document.createElement('button')
