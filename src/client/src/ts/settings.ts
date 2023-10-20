@@ -4,7 +4,7 @@ export const RES_HEIGHT = 600
 
 //Scene names
 export const MAINMENU = 'main-menu'
-export const SELECTION_ROOM = 'selection-menu'
+export const SELECTION_MENU = 'selection-menu'
 export const MAP_ROOM = 'map-test'
 
 //WebSocket settings

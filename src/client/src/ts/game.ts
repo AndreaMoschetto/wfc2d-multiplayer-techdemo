@@ -1,6 +1,6 @@
-import { Color, DisplayMode, Engine, Input } from "excalibur";
+import { Color, Engine, Input } from "excalibur";
 import { MainMenu } from "@root/scenes/main-menu";
-import { MAINMENU, RES_HEIGHT as GAME_HEIGHT, RES_WIDTH as GAME_WIDTH, MAP_ROOM, SELECTION_ROOM as SELECTION_MENU } from "@root/settings";
+import { MAINMENU, RES_HEIGHT as GAME_HEIGHT, RES_WIDTH as GAME_WIDTH, MAP_ROOM, SELECTION_MENU as SELECTION_MENU } from "@root/settings";
 import { MapTest } from "./scenes/map-test";
 import { SelectionMenu } from "./scenes/selection-room";
 
