@@ -7,7 +7,6 @@ export class MainMenu extends Scene {
     private ui!: HTMLElement
     override onActivate(_context: SceneActivationContext<unknown>): void {
         this.ui = document.getElementById('ui')!
-        this.ui.classList.add('MainMenu')
 
         const inputField = document.createElement('input')
         inputField.type = 'text'
@@ -16,7 +15,7 @@ export class MainMenu extends Scene {
 
         const btnStart = document.createElement('button')
         btnStart.innerHTML = 'Go!'
-        btnStart.className = 'button button--start'
+        btnStart.className = 'button'
 
         const errorMsg = document.createElement('p')
 

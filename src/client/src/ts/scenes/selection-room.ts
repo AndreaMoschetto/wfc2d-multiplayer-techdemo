@@ -1,56 +1,83 @@
 import { EventManager } from "@root/managers/event-manager";
 import { WebSocketManager } from "@root/managers/websocket-manager";
-import { ErrorCode, MAP_ROOM} from "@root/settings";
+import { ErrorCode, MAP_ROOM, MAX_USERS_PER_ROOM } from "@root/settings";
 import { Scene, SceneActivationContext } from "excalibur";
 
 export class SelectionMenu extends Scene {
     private ui!: HTMLElement
     override onActivate(_context: SceneActivationContext<unknown>): void {
-        this.ui = document.getElementById('ui')!
-        this.ui.classList.add('MainMenu')
+        const username = <string>_context.data
+        const ui = document.getElementById('ui')!;
 
-        const inputField = document.createElement('input')
-        inputField.type = 'text'
-        inputField.placeholder = 'GLGGLGLGL your username'
-        inputField.className = 'username-input'
+        const pSelectionTitle = document.createElement('p');
+        pSelectionTitle.className = 'selection-title';
+        pSelectionTitle.innerHTML = `Hi <span id="username">${username}</span>, <br>Join a room or create a new one ^-^`;
 
-        const btnStart = document.createElement('button')
-        btnStart.innerHTML = 'Go!'
-        btnStart.className = 'button button--start'
+        const divSelectionContainer = document.createElement('div');
+        divSelectionContainer.className = 'selection-container';
 
-        const errorMsg = document.createElement('p')
+        const divRoomListContainer = document.createElement('div');
+        divRoomListContainer.className = 'roomlist-container';
 
-        errorMsg.className = 'error-msg'
-        errorMsg.hidden = true
-        document.addEventListener('keydown', (event) => {
-            if(event.key === 'Enter'){
-                btnStart.click()
-            }
-        })
-        btnStart.onclick = function (e) {
-            e.preventDefault()
-            if (inputField.value != "")
-                WebSocketManager.getInstance().setUsername(inputField.value)
+        const pExistingRooms = document.createElement('p');
+        pExistingRooms.textContent = 'Existing rooms';
+
+        const divRoomList = document.createElement('div');
+        divRoomList.className = 'room-list';
+
+        for (let i = 0; i < 1; i++) {
+            const divRoomEntry = document.createElement('div');
+            divRoomEntry.className = 'room-entry';
+            divRoomEntry.id = i.toString();
+
+            const pRoomName = document.createElement('p');
+            pRoomName.id = 'room-name';
+            pRoomName.textContent = 'room_name';
+
+            const pUsers = document.createElement('p');
+            pUsers.innerHTML = `<span id="n-users">0</span>/<span id="max-users">${MAX_USERS_PER_ROOM}</span>`;
+
+            divRoomEntry.appendChild(pRoomName);
+            divRoomEntry.appendChild(pUsers);
+
+            divRoomList.appendChild(divRoomEntry);
         }
-        EventManager.getInstance().on('usernameError', (data: any) => {
-            const errorCode = data['error']
-            errorMsg.hidden = false
-            console.log(errorCode)
-            if (errorCode === ErrorCode.ROOM_IS_FULL)
-                errorMsg.innerHTML = '*there are too many users, retry later'
-            else if (errorCode === ErrorCode.USERNAME_ALREADY_EXISTS)
-                errorMsg.innerHTML = '*nickname must be unique, try a different one'
-        })
-        EventManager.getInstance().on('usernameAccepted', () => _context.engine.goToScene(MAP_ROOM, inputField.value))
 
-        this.ui?.appendChild(inputField)
-        this.ui?.appendChild(btnStart)
-        this.ui?.appendChild(errorMsg)
+        const buttonJoin = document.createElement('button');
+        buttonJoin.textContent = 'join!';
+
+        divRoomListContainer.appendChild(pExistingRooms);
+        divRoomListContainer.appendChild(divRoomList);
+        divRoomListContainer.appendChild(buttonJoin);
+
+        divSelectionContainer.appendChild(divRoomListContainer);
+
+        const divCreationContainer = document.createElement('div');
+        divCreationContainer.className = 'creation-container';
+
+        const pNewRoom = document.createElement('p');
+        pNewRoom.textContent = 'new room';
+
+        const inputRoomName = document.createElement('input');
+        inputRoomName.className = 'username-input';
+        inputRoomName.type = 'text';
+        inputRoomName.placeholder = 'room name';
+
+        const buttonCreateAndJoin = document.createElement('button');
+        buttonCreateAndJoin.textContent = 'create and join!';
+
+        divCreationContainer.appendChild(pNewRoom);
+        divCreationContainer.appendChild(inputRoomName);
+        divCreationContainer.appendChild(buttonCreateAndJoin);
+
+        divSelectionContainer.appendChild(divCreationContainer);
+
+        ui.appendChild(pSelectionTitle);
+        ui.appendChild(divSelectionContainer);
 
     }
 
     override onDeactivate(_context: SceneActivationContext<undefined>): void {
-        this.ui.classList.remove('MainMenu')
         this.ui.innerHTML = ''
     }
 }

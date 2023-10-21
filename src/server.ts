@@ -3,7 +3,7 @@ import express from 'express'
 import { Server } from 'socket.io'
 import cors from 'cors'
 import path from 'path'
-import { ErrorCode, MAX_USERS, SERVER_PORT } from './client/src/ts/settings'
+import { ErrorCode, MAX_USERS_PER_ROOM, SERVER_PORT } from './client/src/ts/settings'
 import { WaveFunctionCollapse } from './wave-function-collapse'
 
 const app = express()
@@ -24,7 +24,7 @@ let matrix: [number, number, boolean][][] = []
 io.on('connection', (socket) => {
 
     socket.on('set-username', (data) => {
-        if (users.length < MAX_USERS) {
+        if (users.length < MAX_USERS_PER_ROOM) {
             let index = users.findIndex(a => a.username === data.username)
             if (index == -1) {
                 socket.emit('username-accepted')
