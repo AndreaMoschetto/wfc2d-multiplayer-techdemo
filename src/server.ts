@@ -3,7 +3,7 @@ import express from 'express'
 import { Server } from 'socket.io'
 import cors from 'cors'
 import path from 'path'
-import { ErrorCode, LOBBY, MAX_ROOMS, MAX_USERS, MAX_USERS_PER_ROOM, SERVER_PORT } from './client/src/ts/settings'
+import { ErrorCode, MAX_ROOMS, MAX_USERS, MAX_USERS_PER_ROOM, SERVER_PORT } from './client/src/ts/settings'
 import { WaveFunctionCollapse } from './wave-function-collapse'
 
 const app = express()
