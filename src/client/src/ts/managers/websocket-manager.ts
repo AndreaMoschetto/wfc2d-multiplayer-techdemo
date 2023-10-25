@@ -15,20 +15,12 @@ export class WebSocketManager {
         this.ipaddr = _ipaddr;
         this.io = io(`http://${this.ipaddr}:${this.port}`)
 
-        this.io.on('character-move', (data) => {
-            EventManager.getInstance().emit('characterMoved', data)
-        })
-        this.io.on('allCharacters', (data) => {
-            EventManager.getInstance().emit('allCharacters', data)
-        })
-        this.io.on('map-response', (data) => {
-            EventManager.getInstance().emit('mapGenerated', data)
-        })
-        this.io.on('character-disconnected', (data) => {
-            EventManager.getInstance().emit('characterDisconnected', data)
-        })
-        this.io.on('username-accepted', () =>{EventManager.getInstance().emit('usernameAccepted')})
-        this.io.on('username-error', (data) =>{EventManager.getInstance().emit('usernameError', data)})
+        this.io.on('character-move', (data) => { EventManager.getInstance().emit('characterMoved', data) })
+        this.io.on('allCharacters', (data) => { EventManager.getInstance().emit('allCharacters', data) })
+        this.io.on('map-response', (data) => { EventManager.getInstance().emit('mapGenerated', data) })
+        this.io.on('character-disconnected', (data) => { EventManager.getInstance().emit('characterDisconnected', data) })
+        this.io.on('username-accepted', () => { EventManager.getInstance().emit('usernameAccepted') })
+        this.io.on('username-error', (data) => { EventManager.getInstance().emit('usernameError', data) })
     }
 
     public static getInstance(
