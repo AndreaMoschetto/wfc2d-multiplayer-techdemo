@@ -3,7 +3,7 @@ import express from 'express'
 import { Server } from 'socket.io'
 import cors from 'cors'
 import path from 'path'
-import { ErrorCode, MAX_USERS_PER_ROOM, SERVER_PORT } from './client/src/ts/settings'
+import { ErrorCode, LOBBY, MAX_ROOMS, MAX_USERS, MAX_USERS_PER_ROOM, SERVER_PORT } from './client/src/ts/settings'
 import { WaveFunctionCollapse } from './wave-function-collapse'
 
 const app = express()
@@ -19,53 +19,201 @@ app.use(express.json())
 
 app.use(express.static(clientPath))
 app.use(express.static(assetsPath))
-let users: { username: string, position: { x: number, y: number } }[] = []
+class User {
+    public username: string
+    public position: { x: number, y: number }
+
+    constructor(username: string, position: { x: number, y: number } = { x: 0, y: 0 }) {
+        this.username = username
+        this.position = position
+    }
+}
+
+class Room {
+    public name: string
+    public users: User[]
+    public matrix: [number, number, boolean][][]
+    constructor(name: string, users: User[], matrix: [number, number, boolean][][]) {
+        this.name = name
+        this.users = users
+        this.matrix = matrix
+    }
+}
+
+class DataBase {
+    private lobby: User[]
+    private rooms: Room[]
+    constructor() {
+        this.rooms = []
+        this.lobby = []
+    }
+
+    public usersLength(): number {
+        let count = this.lobby.length
+        this.rooms.forEach(room => { count += room.users.length })
+        return count
+    }
+    public usersLengthInRoom(roomName: string): number {
+        return this.rooms.filter(a => a.name === roomName).pop()!.users.length
+    }
+    public usersLengthInLobby(): number {
+        return this.lobby.length
+    }
+    public roomsLength(): number {
+        return this.rooms.length
+    }
+    public getUser(username: string): User | undefined {
+        let user: User | undefined = this.lobby.filter(a => a.username === username).pop()
+        if (user === undefined)
+            this.rooms.forEach(room => {
+                user = room.users.filter(a => a.username === username).pop()
+            })
+        return user
+    }
+    public existUser(username: string): boolean {
+        return this.getUser(username) != undefined
+    }
+    public getRoomsList(): { [room: string]: number } {
+        let roomsList: { [room: string]: number } = {}
+        this.rooms.forEach(room => {
+            roomsList[room.name] = room.users.length
+        })
+        return roomsList
+    }
+
+    public getRoom(roomName: string): Room | undefined {
+        return this.rooms.filter(a => a.name === roomName).pop()
+    }
+    public getRoomByUser(username: string): Room {
+        let foundRoom: Room | undefined
+        this.rooms.forEach(room => {
+            if (room.users.filter(user => user.username === username).length == 1) {
+                foundRoom = room
+            }
+        })
+        return foundRoom!
+    }
+    public existRoom(room: string): boolean {
+        return this.getRoom(room) != undefined
+    }
+    public addUser(username: string) {
+        this.lobby.push(new User(username))
+    }
+    public addRoom(roomName: string, username: string, matrix: [number, number, boolean][][]) {
+        this.rooms.push(new Room(roomName, [this.getUser(username)!], matrix))
+        this.lobby = this.lobby.filter(a => a.username !== username)
+    }
+    public joinInRoom(username: string, roomName: string) {
+        let user = this.getUser(username)!
+        this.rooms.filter(a => a.name === roomName).pop()!.users.push(user)
+        this.lobby = this.lobby.filter(a => a.username !== username)
+    }
+    public getAllUsersInRoom(roomName: string): User[] {
+        return this.getRoom(roomName)!.users
+    }
+    public leaveRoom(username: string) {
+        let room = this.getRoomByUser(username)
+        let user = this.getUser(username)!
+        room.users = room.users.filter(a => a.username !== username)
+        this.lobby.push(user)
+    }
+
+    public deleteRoom(roomName: string) {
+        this.rooms = this.rooms.filter(a => a.name !== roomName)
+    }
+
+    public removeUser(username: string) {
+        this.lobby = this.lobby.filter(a => a.username !== username)
+        let room = this.getRoomByUser(username)
+        room.users = room.users.filter(a => a.username !== username)
+    }
+}
+let db = new DataBase()
+//let rooms: { name: string, usernames: string[] }[] = []
 let matrix: [number, number, boolean][][] = []
 io.on('connection', (socket) => {
 
-    socket.on('set-username', (data) => {
-        if (users.length < MAX_USERS_PER_ROOM) {
-            let index = users.findIndex(a => a.username === data.username)
-            if (index == -1) {
-                socket.emit('username-accepted')
+    socket.on('set-username-request', (data: { username: string }) => {
+        if (db.usersLength() < MAX_USERS) {
+            if (!db.existUser(data.username)) {
+                db.addUser(data.username)
+                socket.emit('username-accepted', db.getRoomsList())
+                if (db.usersLengthInLobby() > 1)
+                    socket.broadcast.emit('character-connected', data.username)
             }
-            else socket.emit('username-error', { 'error': ErrorCode.USERNAME_ALREADY_EXISTS })
+            else socket.emit('username-declined', { 'error': ErrorCode.ALREADY_EXISTS })
         }
-        else socket.emit('username-error', { 'error': ErrorCode.ROOM_IS_FULL })
+        else socket.emit('username-declined', { 'error': ErrorCode.FULL })
+    })
+    socket.on('create-room-request', (data: { roomName: string, username: string, tilemapRows: number, tilemapColumns: number }) => {
+        if (db.roomsLength() < MAX_ROOMS) {
+            if (!db.existRoom(data.roomName)) {
+                let wfc = new WaveFunctionCollapse(data.tilemapRows, data.tilemapColumns)
+                matrix = wfc.resolve()
+                db.addRoom(data.roomName, data.username, matrix)
+                socket.join(data.roomName) //first user in this room
+                socket.emit('room-accepted')
+                if (db.usersLengthInLobby() > 0)
+                    socket.broadcast.emit('room-created', { 'roonName': data.roomName })
+            }
+            else socket.emit('room-declined', { 'error': ErrorCode.ALREADY_EXISTS })
+        }
+        else socket.emit('room-declined', { 'error': ErrorCode.FULL })
     })
 
-    socket.on('player-move', (data) => {
-        //Send message to everyone
-        let index = users.findIndex(a => a.username === data.username)
-        if (index == -1) {
-            console.log(`User: ${data['username']} connected`)
-            if (users.length > 0) socket.emit('allCharacters', users)
-            users.push(data)
+    socket.on('join-request', (data: { username: string, roomName: string }) => {
+        const room = db.getRoom(data.roomName)!
+        if (db.usersLengthInRoom(data.roomName) < MAX_USERS_PER_ROOM) {
+            db.joinInRoom(data.username, data.roomName)
+            socket.join(room.name)
+            socket.emit('join-accepted', { 'allCharacters': db.getAllUsersInRoom(data.roomName) , 'mapMatrix' : room.matrix})
+
+            if (db.usersLengthInRoom(data.roomName) > 1) {//to users in room
+                io.in(room.name).emit('character-joined', { 'username': data.username })
+            }
+            if (db.usersLengthInLobby() > 0) {//to users in lobby
+                socket.broadcast.emit('character-joined', data)
+            }
+        }
+        else socket.emit('join-declined', { 'error': ErrorCode.FULL })
+    })
+
+    socket.on('user-left', (data: { username: string }) => {
+        const room = db.getRoomByUser(data.username)
+        db.leaveRoom(data.username)
+        socket.leave(room.name)
+        if (db.usersLengthInRoom(room.name) > 0) {
+            io.in(room.name).emit('character-left', data)
         }
         else {
-            users[index]!.position.x = data.position.x
-            users[index]!.position.y = data.position.y
+            db.deleteRoom(room.name)
         }
-        //console.log(data)
-        socket.broadcast.emit('character-move', data)
+        if (db.usersLengthInLobby() > 0) {
+            socket.broadcast.emit('character-left', { 'roomName': room.name })
+        }
     })
 
-    socket.on('map-request', (data) => {
-        if (matrix.length == 0) {
-            let wfc = new WaveFunctionCollapse(data.tilemapRows, data.tilemapColumns)
-            matrix = wfc.resolve()
+    socket.on('user-disconected', (data: { username: string }) => {
+        const room = db.getRoomByUser(data.username)
+        db.removeUser(data.username)
+        socket.leave(room.name)
+        if (db.usersLengthInRoom(room.name) > 0) {
+            io.in(room.name).emit('character-left', data)
         }
-        console.log('map-request: received')
-        //console.log(matrix)
-        socket.emit('map-response', matrix)
-        console.log('sent matrix')
+        else {
+            db.deleteRoom(room.name)
+        }
+        if (db.usersLengthInLobby() > 0) {
+            socket.broadcast.emit('character-left', { 'roomName': room.name })
+        }
     })
 
-    socket.on('user-disconnected', (data) => {
-        console.log(`user: ${data['username']} disconnected`)
-        const user = users.filter(a => a.username === data['username']).pop()!
-        users = users.filter(a => a !== user)
-        socket.broadcast.emit('character-disconnected', data)
+    socket.on('player-move', (data: { username: string, position: { x: number, y: number } }) => {
+        //Send message to everyone in room
+        const room = db.getRoomByUser(data.username)
+        if (db.usersLengthInRoom(room.name) > 1) {
+            io.in(room.name).emit('character-moved', data)
+        }
     })
 })
 httpServer.listen(SERVER_PORT)
