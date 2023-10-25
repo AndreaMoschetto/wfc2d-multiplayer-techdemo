@@ -3,7 +3,7 @@ import express from 'express'
 import { Server } from 'socket.io'
 import cors from 'cors'
 import path from 'path'
-import { ErrorCode, MAX_ROOMS, MAX_USERS, MAX_USERS_PER_ROOM, SERVER_PORT } from './client/src/ts/settings'
+import { ErrorCode, MAX_ROOMS, MAX_USERS, MAX_USERS_PER_ROOM, SERVER_PORT, TILEMAP_COLUMNS, TILEMAP_ROWS } from './client/src/ts/settings'
 import { WaveFunctionCollapse } from './wave-function-collapse'
 
 const app = express()
@@ -26,6 +26,10 @@ class User {
     constructor(username: string, position: { x: number, y: number } = { x: 0, y: 0 }) {
         this.username = username
         this.position = position
+    }
+
+    public exportData(): { username: string; position: { x: number; y: number } } {
+        return { 'username': this.username, 'position': this.position }
     }
 }
 
@@ -73,10 +77,10 @@ class DataBase {
     public existUser(username: string): boolean {
         return this.getUser(username) != undefined
     }
-    public getRoomsList(): { [room: string]: number } {
-        let roomsList: { [room: string]: number } = {}
+    public getRoomsList(): { roomName: string, nUsers: number }[] {
+        let roomsList: { roomName: string, nUsers: number }[] = []
         this.rooms.forEach(room => {
-            roomsList[room.name] = room.users.length
+            roomsList.push({ roomName: room.name, nUsers: room.users.length })
         })
         return roomsList
     }
@@ -99,17 +103,21 @@ class DataBase {
     public addUser(username: string) {
         this.lobby.push(new User(username))
     }
-    public addRoom(roomName: string, username: string, matrix: [number, number, boolean][][]) {
-        this.rooms.push(new Room(roomName, [this.getUser(username)!], matrix))
+    public addRoom(roomName: string, username: string, matrix: [number, number, boolean][][]): Room {
+        const room = new Room(roomName, [this.getUser(username)!], matrix)
+        this.rooms.push(room)
         this.lobby = this.lobby.filter(a => a.username !== username)
+        return room
     }
     public joinInRoom(username: string, roomName: string) {
         let user = this.getUser(username)!
         this.rooms.filter(a => a.name === roomName).pop()!.users.push(user)
         this.lobby = this.lobby.filter(a => a.username !== username)
     }
-    public getAllUsersInRoom(roomName: string): User[] {
-        return this.getRoom(roomName)!.users
+    public getAllUsersInRoom(roomName: string): { username: string; position: { x: number; y: number } }[] {
+        const data: { username: string; position: { x: number; y: number } }[] = []
+        this.getRoom(roomName)!.users.forEach(user => data.push(user.exportData()))
+        return data
     }
     public leaveRoom(username: string) {
         let room = this.getRoomByUser(username)
@@ -137,7 +145,7 @@ io.on('connection', (socket) => {
         if (db.usersLength() < MAX_USERS) {
             if (!db.existUser(data.username)) {
                 db.addUser(data.username)
-                socket.emit('username-accepted', db.getRoomsList())
+                socket.emit('username-accepted', { 'username': data.username, 'roomList': db.getRoomsList() })
                 if (db.usersLengthInLobby() > 1)
                     socket.broadcast.emit('character-connected', data.username)
             }
@@ -145,16 +153,16 @@ io.on('connection', (socket) => {
         }
         else socket.emit('username-declined', { 'error': ErrorCode.FULL })
     })
-    socket.on('create-room-request', (data: { roomName: string, username: string, tilemapRows: number, tilemapColumns: number }) => {
+    socket.on('create-room-request', (data: { roomName: string, username: string}) => {
         if (db.roomsLength() < MAX_ROOMS) {
             if (!db.existRoom(data.roomName)) {
-                let wfc = new WaveFunctionCollapse(data.tilemapRows, data.tilemapColumns)
+                let wfc = new WaveFunctionCollapse(TILEMAP_ROWS, TILEMAP_COLUMNS)
                 matrix = wfc.resolve()
-                db.addRoom(data.roomName, data.username, matrix)
+                const room = db.addRoom(data.roomName, data.username, matrix)
                 socket.join(data.roomName) //first user in this room
-                socket.emit('room-accepted')
+                socket.emit('join-accepted', { 'username': data.username,'allCharacters': db.getAllUsersInRoom(data.roomName), 'mapMatrix': room.matrix })
                 if (db.usersLengthInLobby() > 0)
-                    socket.broadcast.emit('room-created', { 'roonName': data.roomName })
+                    socket.broadcast.emit('room-created', { 'roomName': data.roomName })
             }
             else socket.emit('room-declined', { 'error': ErrorCode.ALREADY_EXISTS })
         }
@@ -166,7 +174,7 @@ io.on('connection', (socket) => {
         if (db.usersLengthInRoom(data.roomName) < MAX_USERS_PER_ROOM) {
             db.joinInRoom(data.username, data.roomName)
             socket.join(room.name)
-            socket.emit('join-accepted', { 'allCharacters': db.getAllUsersInRoom(data.roomName) , 'mapMatrix' : room.matrix})
+            socket.emit('join-accepted', { 'allCharacters': db.getAllUsersInRoom(data.roomName), 'mapMatrix': room.matrix })
 
             if (db.usersLengthInRoom(data.roomName) > 1) {//to users in room
                 io.in(room.name).emit('character-joined', { 'username': data.username })

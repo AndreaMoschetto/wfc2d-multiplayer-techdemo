@@ -3,6 +3,7 @@ import { WebSocketManager } from "@root/managers/websocket-manager";
 import { Images } from "@root/resources";
 import { BoundingBox, Engine, Input, SceneActivationContext, SpriteSheet, Tile, TileMap } from "excalibur";
 import { Room } from "./room";
+import { TILEMAP_COLUMNS, TILEMAP_ROWS } from "@root/settings";
 
 export class MapTest extends Room {
     private tilemap: TileMap
@@ -19,8 +20,8 @@ export class MapTest extends Room {
     public constructor() {
         super();
         this.tilemap = new TileMap({
-            rows: 30,
-            columns: 40,
+            rows: TILEMAP_ROWS,
+            columns: TILEMAP_COLUMNS,
             tileWidth: 32,
             tileHeight: 32,
         });
@@ -31,7 +32,7 @@ export class MapTest extends Room {
 
     override onInitialize(_engine: Engine): void {
         super.onInitialize(_engine)
-        EventManager.getInstance().on('mapGenerated', this.handleMapGenerated.bind(this))
+        //EventManager.getInstance().on('mapGenerated', this.handleMapGenerated.bind(this))
 
         this.tilemapSpriteSheet = SpriteSheet.fromImageSource({
             image: Images.tilemapImage,
@@ -62,7 +63,8 @@ export class MapTest extends Room {
         )
         console.log(`screenWidth:${this.screenWidth}\nscreenHeight:${this.screenHeight}\nmapWidth:${this.mapWidth}\nmapHeight:${this.mapHeight}`)
         console.log(this.box)
-        this.produceMap()
+        
+        //this.produceMap()
     }
 
     private spawnPlayer() {
@@ -84,11 +86,11 @@ export class MapTest extends Room {
         this.add(this.player)
     }
 
-    private produceMap() {
-        WebSocketManager.getInstance().sendMapRequest(this.tilemap.rows, this.tilemap.columns)
-    }
+    // private produceMap() {
+    //     WebSocketManager.getInstance().sendMapRequest(this.tilemap.rows, this.tilemap.columns)
+    // }
 
-    private handleMapGenerated(matrix: [number, number, boolean][][]){
+    private generateLevel(matrix: [number, number, boolean][][]){
         this.remove(this.tilemap)
         for (let y = 0; y < this.tilemap.rows; y++) {
             for (let x = 0; x < this.tilemap.columns; x++) {
@@ -114,6 +116,8 @@ export class MapTest extends Room {
 
     override onActivate(_context: SceneActivationContext<unknown>): void {
         super.onActivate(_context)
+        this.generateLevel(this.startingInfo.mapMatrix)
+        //POSSIBLE ERROR: generating map after characters
         this.tilemap.scale.setTo(1, 1)
         this.camera.zoom = 1.5
     }

@@ -1,6 +1,6 @@
 import { EventManager } from "@root/managers/event-manager";
 import { WebSocketManager } from "@root/managers/websocket-manager";
-import { ErrorCode, SELECTION_MENU} from "@root/settings";
+import { ErrorCode, LOBBY} from "@root/settings";
 import { Scene, SceneActivationContext } from "excalibur";
 
 export class MainMenu extends Scene {
@@ -35,12 +35,12 @@ export class MainMenu extends Scene {
             const errorCode = data['error']
             errorMsg.hidden = false
             console.log(errorCode)
-            if (errorCode === ErrorCode.ROOM_IS_FULL)
+            if (errorCode === ErrorCode.FULL)
                 errorMsg.innerHTML = '*there are too many users, retry later'
-            else if (errorCode === ErrorCode.USERNAME_ALREADY_EXISTS)
+            else if (errorCode === ErrorCode.ALREADY_EXISTS)
                 errorMsg.innerHTML = '*nickname must be unique, try a different one'
         })
-        EventManager.getInstance().on('usernameAccepted', () => _context.engine.goToScene(SELECTION_MENU, inputField.value))
+        EventManager.getInstance().on('usernameAccepted', (data: any) => _context.engine.goToScene(LOBBY, data))
 
         this.ui?.appendChild(inputField)
         this.ui?.appendChild(btnStart)

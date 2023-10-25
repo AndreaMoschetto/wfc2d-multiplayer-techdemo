@@ -6,8 +6,10 @@ import { WebSocketManager } from "@root/managers/websocket-manager";
 
 export class Room extends Scene {
     protected player!: Player
+    protected startingInfo!: {username: string, allCharacters: { username: string; position: { x: number; y: number } } [] , 'mapMatrix' : [number, number, boolean][][]}
     private characters: Character[]
     private playerCounter: HTMLElement
+    
 
     constructor() {
         super()
@@ -16,21 +18,23 @@ export class Room extends Scene {
     }
 
     override onActivate(_context: SceneActivationContext<unknown>): void {
-        EventManager.getInstance().on('characterMoved', this.handleOnCharacterMoved.bind(this))
-        EventManager.getInstance().on('allCharacters', this.handleOnAllCharacters.bind(this))
+        this.startingInfo = _context.data as {username: string, allCharacters: { username: string; position: { x: number; y: number } } [] , 'mapMatrix' : [number, number, boolean][][]}
+        //EventManager.getInstance().on('characterMoved', this.handleOnCharacterMoved.bind(this))
+        //EventManager.getInstance().on('allCharacters', this.handleOnAllCharacters.bind(this))
         window.addEventListener('beforeunload', this.handleOnBeforeUnload.bind(this))
-        EventManager.getInstance().on('characterDisconnected', this.handleOnCharacterDisconnected.bind(this))
+        EventManager.getInstance().on('characterLeft', this.handleOnCharacterLeft.bind(this))
 
-        this.player = new Player(<string>_context.data)
+        this.player = new Player(this.startingInfo.username)
         this.playerCounter.innerHTML = '1'
-
+        
+        this.addCharacters(this.startingInfo.allCharacters)
         //this.add(this.player)
     }
 
     public handleOnBeforeUnload(){
         WebSocketManager.getInstance().sendDisconnection(this.player.name)
     }
-    public handleOnCharacterDisconnected(data: any){
+    public handleOnCharacterLeft(data: any){
         const character = this.characters.filter(elem => elem.name === data['username']).pop()!
         this.remove(character)
         this.characters = this.characters.filter(elem => elem !== character)
@@ -64,5 +68,14 @@ export class Room extends Scene {
             this.playerCounter.innerHTML = (this.characters.length + 1).toString()
         }
         character.pos.setTo(x, y)
+    }
+
+    public addCharacters(allCharacters: { username: string; position: { x: number; y: number } } [] ){
+        allCharacters.forEach(characterInfo =>{
+                let character = new Character(characterInfo.username, characterInfo.position.x, characterInfo.position.y)
+                this.add(character)
+                this.characters.push(character)
+                this.playerCounter.innerHTML = (this.characters.length + 1).toString()
+        })
     }
 }
