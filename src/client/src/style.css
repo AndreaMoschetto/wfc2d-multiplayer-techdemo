@@ -145,9 +145,21 @@ body {
 #ui .room-entry:hover,
 #ui .room-entry:hover>p,
 #ui .room-entry:hover span {
+    background-color: #d0d0d0;
+    color: black;
+}
+#ui .room-entry.selected,
+#ui .room-entry.selected>p,
+#ui .room-entry.selected span {
     background-color: white;
     color: black;
 }
+#ui .room-entry.full,
+#ui .room-entry.full>p,
+#ui .room-entry.full span {
+    color: #747474;
+}
+
 
 #ui .creation-container {
     /* border: 2px solid white; */
