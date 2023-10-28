@@ -13,9 +13,9 @@ export const MAP_ROOM = 'map-test'
 export const SERVER_ADDR = 'localhost'
 export const SERVER_PORT = 7777
 export const MAX_USERS = 20
-export const MAX_USERS_PER_ROOM = 2
+export const MAX_USERS_PER_ROOM = 3
 export const MAX_ROOMS = 5
-export const SERVER_LOBBY = 'lobby'
+export const SERVER_LOBBY = 'server-lobby'
 
 //error codes
 export enum ErrorCode{

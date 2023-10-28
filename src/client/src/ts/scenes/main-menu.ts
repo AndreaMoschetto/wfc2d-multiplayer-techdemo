@@ -31,10 +31,10 @@ export class MainMenu extends Scene {
             if (inputField.value != "")
                 WebSocketManager.getInstance().setUsername(inputField.value)
         }
-        EventManager.getInstance().on('usernameError', (data: any) => {
-            const errorCode = data['error']
+        EventManager.getInstance().on('usernameDeclined', (data: {error: ErrorCode}) => {
+            const errorCode = data.error
             errorMsg.hidden = false
-            console.log(errorCode)
+            // console.log(errorCode)
             if (errorCode === ErrorCode.FULL)
                 errorMsg.innerHTML = '*there are too many users, retry later'
             else if (errorCode === ErrorCode.ALREADY_EXISTS)

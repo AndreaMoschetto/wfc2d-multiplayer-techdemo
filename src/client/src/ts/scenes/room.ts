@@ -4,12 +4,12 @@ import { Character } from "@root/characters/character";
 import { EventManager } from "@root/managers/event-manager";
 import { WebSocketManager } from "@root/managers/websocket-manager";
 
-export class Room extends Scene {
+export abstract class Room extends Scene {
     protected player!: Player
-    protected startingInfo!: {username: string, allCharacters: { username: string; position: { x: number; y: number } } [] , 'mapMatrix' : [number, number, boolean][][]}
+    protected startingInfo!: { username: string, allCharacters: { username: string; position: { x: number; y: number } }[], 'mapMatrix': [number, number, boolean][][] }
     private characters: Character[]
     private playerCounter: HTMLElement
-    
+
 
     constructor() {
         super()
@@ -18,48 +18,52 @@ export class Room extends Scene {
     }
 
     override onActivate(_context: SceneActivationContext<unknown>): void {
-        this.startingInfo = _context.data as {username: string, allCharacters: { username: string; position: { x: number; y: number } } [] , 'mapMatrix' : [number, number, boolean][][]}
-        //EventManager.getInstance().on('characterMoved', this.handleOnCharacterMoved.bind(this))
+        this.startingInfo = _context.data as { username: string, allCharacters: { username: string; position: { x: number; y: number } }[], mapMatrix: [number, number, boolean][][] }
+        EventManager.getInstance().on('characterMoved', this.handleOnCharacterMoved)
         //EventManager.getInstance().on('allCharacters', this.handleOnAllCharacters.bind(this))
-        window.addEventListener('beforeunload', this.handleOnBeforeUnload.bind(this))
-        EventManager.getInstance().on('characterLeft', this.handleOnCharacterLeft.bind(this))
-
+        //EventManager.getInstance().on('characterJoined', this.handleOnCharacterJoined.bind(this))
+        window.addEventListener('beforeunload', this.handleOnBeforeUnload)
+        EventManager.getInstance().on('characterLeft', this.handleOnCharacterLeft)
+        
         this.player = new Player(this.startingInfo.username)
         this.playerCounter.innerHTML = '1'
-        
-        this.addCharacters(this.startingInfo.allCharacters)
+        this.generateLevel(this.startingInfo.mapMatrix)
+        if(this.startingInfo.allCharacters)
+            this.addCharacters(this.startingInfo.allCharacters)
+
         //this.add(this.player)
     }
+    protected abstract generateLevel(matrix: [number, number, boolean][][]): void
 
-    public handleOnBeforeUnload(){
+    public handleOnBeforeUnload = () => {
         WebSocketManager.getInstance().sendDisconnection(this.player.name)
     }
-    public handleOnCharacterLeft(data: any){
-        const character = this.characters.filter(elem => elem.name === data['username']).pop()!
+    public handleOnCharacterLeft = (data: { username: string }) => {
+        const character = this.characters.filter(elem => elem.name === data.username).pop()!
         this.remove(character)
         this.characters = this.characters.filter(elem => elem !== character)
         this.playerCounter.innerHTML = (this.characters.length + 1).toString()
     }
 
-    public handleOnAllCharacters(data: any) {
-        data.forEach((characterInfo: { username: string, position: { x: number, y: number } }) => {
-            const username = characterInfo.username
-            const x = characterInfo.position.x
-            const y = characterInfo.position.y
+    // public handleOnAllCharacters(data: any) {
+    //     data.forEach((characterInfo: { username: string, position: { x: number, y: number } }) => {
+    //         const username = characterInfo.username
+    //         const x = characterInfo.position.x
+    //         const y = characterInfo.position.y
 
-            let character = new Character(username, x, y)
-            this.add(character)
-            this.characters.push(character)
-        });
-        this.playerCounter.innerHTML = (this.characters.length + 1).toString()
-    }
+    //         let character = new Character(username, x, y)
+    //         this.add(character)
+    //         this.characters.push(character)
+    //     });
+    //     this.playerCounter.innerHTML = (this.characters.length + 1).toString()
+    // }
 
-    public handleOnCharacterMoved(data: any) {
-        const username: string = data.username
-        const x: number = data.position.x
-        const y: number = data.position.y
+    public handleOnCharacterMoved = (data: { username: string, position: { x: number, y: number } }) => {
+        const username = data.username
+        const x = data.position.x
+        const y = data.position.y
 
-        let character = this.characters.find(a => a.name === username)
+        let character = this.characters.filter(a => a.name === username).pop()
 
         if (!character) {
             character = new Character(username)
@@ -70,12 +74,19 @@ export class Room extends Scene {
         character.pos.setTo(x, y)
     }
 
-    public addCharacters(allCharacters: { username: string; position: { x: number; y: number } } [] ){
-        allCharacters.forEach(characterInfo =>{
-                let character = new Character(characterInfo.username, characterInfo.position.x, characterInfo.position.y)
-                this.add(character)
-                this.characters.push(character)
-                this.playerCounter.innerHTML = (this.characters.length + 1).toString()
+    public addCharacters(allCharacters: { username: string; position: { x: number; y: number } }[]) {
+        allCharacters.forEach(characterInfo => {
+            let character = new Character(characterInfo.username, characterInfo.position.x, characterInfo.position.y)
+            this.add(character)
+            this.characters.push(character)
+            this.playerCounter.innerHTML = (this.characters.length + 1).toString()
         })
+    }
+
+    override onDeactivate(_context: SceneActivationContext<undefined>): void {
+        EventManager.getInstance().off('characterLeft', this.handleOnCharacterLeft)
+        window.removeEventListener('beforeunload', this.handleOnBeforeUnload)
+        EventManager.getInstance().off('characterMoved', this.handleOnCharacterMoved)
+        
     }
 }

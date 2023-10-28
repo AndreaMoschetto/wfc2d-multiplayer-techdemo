@@ -3,7 +3,7 @@ import express from 'express'
 import { Server } from 'socket.io'
 import cors from 'cors'
 import path from 'path'
-import { ErrorCode, MAX_ROOMS, MAX_USERS, MAX_USERS_PER_ROOM, SERVER_PORT, TILEMAP_COLUMNS, TILEMAP_ROWS } from './client/src/ts/settings'
+import { ErrorCode, MAX_ROOMS, MAX_USERS, MAX_USERS_PER_ROOM, SERVER_LOBBY, SERVER_PORT, TILEMAP_COLUMNS, TILEMAP_ROWS } from './client/src/ts/settings'
 import { WaveFunctionCollapse } from './wave-function-collapse'
 
 const app = express()
@@ -88,14 +88,14 @@ class DataBase {
     public getRoom(roomName: string): Room | undefined {
         return this.rooms.filter(a => a.name === roomName).pop()
     }
-    public getRoomByUser(username: string): Room {
+    public getRoomByUser(username: string): Room | undefined {
         let foundRoom: Room | undefined
         this.rooms.forEach(room => {
             if (room.users.filter(user => user.username === username).length == 1) {
                 foundRoom = room
             }
         })
-        return foundRoom!
+        return foundRoom
     }
     public existRoom(room: string): boolean {
         return this.getRoom(room) != undefined
@@ -120,7 +120,7 @@ class DataBase {
         return data
     }
     public leaveRoom(username: string) {
-        let room = this.getRoomByUser(username)
+        let room = this.getRoomByUser(username)!
         let user = this.getUser(username)!
         room.users = room.users.filter(a => a.username !== username)
         this.lobby.push(user)
@@ -133,17 +133,29 @@ class DataBase {
     public removeUser(username: string) {
         this.lobby = this.lobby.filter(a => a.username !== username)
         let room = this.getRoomByUser(username)
-        room.users = room.users.filter(a => a.username !== username)
+        if (room)
+            room.users = room.users.filter(a => a.username !== username)
+    }
+    public logDb() {
+        console.log('\n\n\n\n\n')
+        console.log('[ROOMS]')
+        console.log('-----------[LOBBY]:')
+        this.lobby.forEach(user => console.log(`${user.username} {x: ${user.position.x}; y: ${user.position.y}}`))
+        this.rooms.forEach(room => {
+            console.log(`-----------[${room.name}]:`)
+            room.users.forEach(user => console.log(`${user.username} {x: ${user.position.x}; y: ${user.position.y}}`))
+        })
+        console.log('------------------[]')
     }
 }
 let db = new DataBase()
-//let rooms: { name: string, usernames: string[] }[] = []
 let matrix: [number, number, boolean][][] = []
 io.on('connection', (socket) => {
 
     socket.on('set-username-request', (data: { username: string }) => {
         if (db.usersLength() < MAX_USERS) {
             if (!db.existUser(data.username)) {
+                console.log(`User '${data.username}' connected`)
                 db.addUser(data.username)
                 socket.emit('username-accepted', { 'username': data.username, 'roomList': db.getRoomsList() })
                 if (db.usersLengthInLobby() > 1)
@@ -152,42 +164,43 @@ io.on('connection', (socket) => {
             else socket.emit('username-declined', { 'error': ErrorCode.ALREADY_EXISTS })
         }
         else socket.emit('username-declined', { 'error': ErrorCode.FULL })
+        db.logDb()
     })
-    socket.on('create-room-request', (data: { roomName: string, username: string}) => {
+    socket.on('create-room-request', (data: { roomName: string, username: string }) => {
         if (db.roomsLength() < MAX_ROOMS) {
             if (!db.existRoom(data.roomName)) {
                 let wfc = new WaveFunctionCollapse(TILEMAP_ROWS, TILEMAP_COLUMNS)
                 matrix = wfc.resolve()
                 const room = db.addRoom(data.roomName, data.username, matrix)
                 socket.join(data.roomName) //first user in this room
-                socket.emit('join-accepted', { 'username': data.username,'allCharacters': db.getAllUsersInRoom(data.roomName), 'mapMatrix': room.matrix })
+                socket.emit('join-accepted', { 'username': data.username, 'allCharacters': [], 'mapMatrix': room.matrix })
                 if (db.usersLengthInLobby() > 0)
                     socket.broadcast.emit('room-created', { 'roomName': data.roomName })
             }
             else socket.emit('room-declined', { 'error': ErrorCode.ALREADY_EXISTS })
         }
         else socket.emit('room-declined', { 'error': ErrorCode.FULL })
+        db.logDb()
     })
 
     socket.on('join-request', (data: { username: string, roomName: string }) => {
         const room = db.getRoom(data.roomName)!
         if (db.usersLengthInRoom(data.roomName) < MAX_USERS_PER_ROOM) {
+            const allUsersInfo = db.getAllUsersInRoom(data.roomName)
             db.joinInRoom(data.username, data.roomName)
             socket.join(room.name)
-            socket.emit('join-accepted', { 'allCharacters': db.getAllUsersInRoom(data.roomName), 'mapMatrix': room.matrix })
-
-            if (db.usersLengthInRoom(data.roomName) > 1) {//to users in room
-                io.in(room.name).emit('character-joined', { 'username': data.username })
-            }
+            socket.emit('join-accepted', { 'username': data.username, 'allCharacters': allUsersInfo, 'mapMatrix': room.matrix })
+            console.log(`player ${data.username} joined in room ${room.name}`)
             if (db.usersLengthInLobby() > 0) {//to users in lobby
                 socket.broadcast.emit('character-joined', data)
             }
         }
         else socket.emit('join-declined', { 'error': ErrorCode.FULL })
+        db.logDb()
     })
-
+    //event not used yet
     socket.on('user-left', (data: { username: string }) => {
-        const room = db.getRoomByUser(data.username)
+        const room = db.getRoomByUser(data.username)!
         db.leaveRoom(data.username)
         socket.leave(room.name)
         if (db.usersLengthInRoom(room.name) > 0) {
@@ -199,28 +212,38 @@ io.on('connection', (socket) => {
         if (db.usersLengthInLobby() > 0) {
             socket.broadcast.emit('character-left', { 'roomName': room.name })
         }
+        db.logDb()
     })
 
-    socket.on('user-disconected', (data: { username: string }) => {
+    socket.on('user-disconnected', (data: { username: string }) => {
         const room = db.getRoomByUser(data.username)
         db.removeUser(data.username)
-        socket.leave(room.name)
-        if (db.usersLengthInRoom(room.name) > 0) {
-            io.in(room.name).emit('character-left', data)
-        }
-        else {
-            db.deleteRoom(room.name)
+        if (room) {
+            if (db.usersLengthInRoom(room.name) > 0) {
+                socket.in(room.name).emit('character-left', data)
+            }
+            else {
+                db.deleteRoom(room.name)
+            }
+            socket.leave(room.name)
         }
         if (db.usersLengthInLobby() > 0) {
-            socket.broadcast.emit('character-left', { 'roomName': room.name })
+            socket.broadcast.emit('character-left', { 'roomName': room?.name ?? SERVER_LOBBY })
         }
+        db.logDb()
     })
 
-    socket.on('player-move', (data: { username: string, position: { x: number, y: number } }) => {
+    socket.on('player-moved', (data: { username: string, position: { x: number, y: number } }) => {
         //Send message to everyone in room
-        const room = db.getRoomByUser(data.username)
-        if (db.usersLengthInRoom(room.name) > 1) {
-            io.in(room.name).emit('character-moved', data)
+        const room = db.getRoomByUser(data.username)!
+        const user = db.getUser(data.username)!
+        if(room && user){
+            user.position.x = data.position.x
+            user.position.y = data.position.y
+            if (db.usersLengthInRoom(room.name) > 1) {
+                socket.in(room.name).emit('character-moved', data)
+            }
+            db.logDb()
         }
     })
 })

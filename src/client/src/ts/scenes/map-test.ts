@@ -61,8 +61,8 @@ export class MapTest extends Room {
             this.mapWidth - this.padding,
             this.mapHeight - this.padding
         )
-        console.log(`screenWidth:${this.screenWidth}\nscreenHeight:${this.screenHeight}\nmapWidth:${this.mapWidth}\nmapHeight:${this.mapHeight}`)
-        console.log(this.box)
+        // console.log(`screenWidth:${this.screenWidth}\nscreenHeight:${this.screenHeight}\nmapWidth:${this.mapWidth}\nmapHeight:${this.mapHeight}`)
+        // console.log(this.box)
         
         //this.produceMap()
     }
@@ -73,14 +73,14 @@ export class MapTest extends Room {
         while(true){
             let tileX = Math.floor(tilePadding + Math.random() * (this.tilemap.columns - tilePadding*2))
             let tileY = Math.floor(tilePadding + Math.random() * (this.tilemap.rows - tilePadding*2))
-            console.log(`tile coords: ${tileX}, ${tileY}`)
+            // console.log(`tile coords: ${tileX}, ${tileY}`)
     
             initialTile = this.tilemap.getTile(tileX, tileY)
-            console.log(initialTile)
+            // console.log(initialTile)
             if (!initialTile.solid) break
         }
         this.player.pos.setTo(initialTile.pos.x, initialTile.pos.y)
-        console.log(`player at ${this.player.pos.x}, ${this.player.pos.y}\ntile at: ${initialTile.pos.x}, ${initialTile.pos.y}`)
+        // console.log(`player at ${this.player.pos.x}, ${this.player.pos.y}\ntile at: ${initialTile.pos.x}, ${initialTile.pos.y}`)
         this.camera.strategy.lockToActor(this.player)
         this.camera.strategy.limitCameraBounds(this.box)
         this.add(this.player)
@@ -90,7 +90,7 @@ export class MapTest extends Room {
     //     WebSocketManager.getInstance().sendMapRequest(this.tilemap.rows, this.tilemap.columns)
     // }
 
-    private generateLevel(matrix: [number, number, boolean][][]){
+    protected override generateLevel(matrix: [number, number, boolean][][]): void {
         this.remove(this.tilemap)
         for (let y = 0; y < this.tilemap.rows; y++) {
             for (let x = 0; x < this.tilemap.columns; x++) {
@@ -102,8 +102,8 @@ export class MapTest extends Room {
                 this.tilemap.getTile(x, y).solid = solidity
             }
         }
-        console.log('adding, map')
-        console.log(matrix)
+        // console.log('adding, map')
+        // console.log(matrix)
         this.add(this.tilemap)
         this.spawnPlayer()
     }
@@ -111,12 +111,12 @@ export class MapTest extends Room {
     override onPostUpdate(_engine: Engine, _delta: number): void {
         if (_engine.input.keyboard.isHeld(Input.Keys.R)) {
             this.spawnPlayer()
+            WebSocketManager.getInstance().sendPosition(this.player.name, this.player.pos)
         }
     }
 
     override onActivate(_context: SceneActivationContext<unknown>): void {
         super.onActivate(_context)
-        this.generateLevel(this.startingInfo.mapMatrix)
         //POSSIBLE ERROR: generating map after characters
         this.tilemap.scale.setTo(1, 1)
         this.camera.zoom = 1.5
