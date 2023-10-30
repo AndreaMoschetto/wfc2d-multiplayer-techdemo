@@ -3,7 +3,7 @@ import express from 'express'
 import { Server } from 'socket.io'
 import cors from 'cors'
 import path from 'path'
-import { ErrorCode, MAX_ROOMS, MAX_USERS, MAX_USERS_PER_ROOM, SERVER_LOBBY, SERVER_PORT, TILEMAP_COLUMNS, TILEMAP_ROWS } from './client/src/ts/settings'
+import { DB_LOG, ErrorCode, MAX_ROOMS, MAX_USERS, MAX_USERS_PER_ROOM, SERVER_LOBBY, SERVER_PORT, TILEMAP_COLUMNS, TILEMAP_ROWS } from './client/src/ts/settings'
 import { WaveFunctionCollapse } from './wave-function-collapse'
 import { readFileSync } from 'fs';
 console.log(process.cwd())
@@ -137,16 +137,18 @@ class DataBase {
         if (room)
             room.users = room.users.filter(a => a.username !== username)
     }
-    public logDb() {
-        console.log('\n\n\n\n\n')
-        console.log('[ROOMS]')
-        console.log('-----------[LOBBY]:')
-        this.lobby.forEach(user => console.log(`${user.username} {x: ${user.position.x}; y: ${user.position.y}}`))
-        this.rooms.forEach(room => {
-            console.log(`-----------[${room.name}]:`)
-            room.users.forEach(user => console.log(`${user.username} {x: ${user.position.x}; y: ${user.position.y}}`))
-        })
-        console.log('------------------[]')
+    public log() {
+        if (DB_LOG) {
+            console.log('\n\n\n\n\n')
+            console.log('[ROOMS]')
+            console.log('-----------[LOBBY]:')
+            this.lobby.forEach(user => console.log(`${user.username} {x: ${user.position.x}; y: ${user.position.y}}`))
+            this.rooms.forEach(room => {
+                console.log(`-----------[${room.name}]:`)
+                room.users.forEach(user => console.log(`${user.username} {x: ${user.position.x}; y: ${user.position.y}}`))
+            })
+            console.log('------------------[]')
+        }
     }
 }
 let db = new DataBase()
@@ -154,8 +156,8 @@ let matrix: [number, number, boolean][][] = []
 let imageData = readFileSync('tilemap.png')
 io.on('connection', (socket) => {
 
-    socket.on('tilemap-req', () => {io.emit('tilemap-data', imageData)})
-    
+    socket.on('tilemap-req', () => { io.emit('tilemap-data', imageData) })
+
     socket.on('set-username-request', (data: { username: string }) => {
         if (db.usersLength() < MAX_USERS) {
             if (!db.existUser(data.username)) {
@@ -168,7 +170,7 @@ io.on('connection', (socket) => {
             else socket.emit('username-declined', { 'error': ErrorCode.ALREADY_EXISTS })
         }
         else socket.emit('username-declined', { 'error': ErrorCode.FULL })
-        db.logDb()
+        db.log()
     })
     socket.on('create-room-request', (data: { roomName: string, username: string }) => {
         if (db.roomsLength() < MAX_ROOMS) {
@@ -184,7 +186,7 @@ io.on('connection', (socket) => {
             else socket.emit('room-declined', { 'error': ErrorCode.ALREADY_EXISTS })
         }
         else socket.emit('room-declined', { 'error': ErrorCode.FULL })
-        db.logDb()
+        db.log()
     })
 
     socket.on('join-request', (data: { username: string, roomName: string }) => {
@@ -200,7 +202,7 @@ io.on('connection', (socket) => {
             }
         }
         else socket.emit('join-declined', { 'error': ErrorCode.FULL })
-        db.logDb()
+        db.log()
     })
     //event not used yet
     socket.on('user-left', (data: { username: string }) => {
@@ -216,7 +218,7 @@ io.on('connection', (socket) => {
         if (db.usersLengthInLobby() > 0) {
             socket.broadcast.emit('character-left', { 'roomName': room.name })
         }
-        db.logDb()
+        db.log()
     })
 
     socket.on('user-disconnected', (data: { username: string }) => {
@@ -234,20 +236,20 @@ io.on('connection', (socket) => {
         if (db.usersLengthInLobby() > 0) {
             socket.broadcast.emit('character-left', { 'roomName': room?.name ?? SERVER_LOBBY })
         }
-        db.logDb()
+        db.log()
     })
 
     socket.on('player-moved', (data: { username: string, position: { x: number, y: number } }) => {
         //Send message to everyone in room
         const room = db.getRoomByUser(data.username)!
         const user = db.getUser(data.username)!
-        if(room && user){
+        if (room && user) {
             user.position.x = data.position.x
             user.position.y = data.position.y
             if (db.usersLengthInRoom(room.name) > 1) {
                 socket.in(room.name).emit('character-moved', data)
             }
-            db.logDb()
+            db.log()
         }
     })
 })

@@ -22,3 +22,6 @@ export enum ErrorCode{
     FULL,
     ALREADY_EXISTS
 }
+
+//debugging
+export const DB_LOG = true
