@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build-client": "parcel build src/client/src/index.html --dist-dir src/www",
-    "start-server": "ts-node src/server.ts",
+    "start-server": "ts-node src/server/main.ts",
     "start": "npm run build-client && npm run start-server"
   },
   "author": "",
