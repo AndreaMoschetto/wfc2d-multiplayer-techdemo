@@ -26,7 +26,7 @@ export class WebSocketManager {
         this.io.on('room-created', (data) => { EventManager.getInstance().emit('roomCreated', data) })
         this.io.on('join-accepted', (data) => { EventManager.getInstance().emit('joinAccepted', data) })
         this.io.on('room-declined', (data) => { EventManager.getInstance().emit('roomDeclined', data) })
-
+        this.io.on('tilemap-data', (data) => {EventManager.getInstance().emit('tilemapData', data)})
 
     }
 
@@ -38,6 +38,10 @@ export class WebSocketManager {
             this.instance = new WebSocketManager(_ipaddr, _port)
         }
         return this.instance
+    }
+
+    public tileMapRequest(){
+        this.io.emit('tilemap-req')
     }
 
     public createRoomReq(roomName: string, username: string){

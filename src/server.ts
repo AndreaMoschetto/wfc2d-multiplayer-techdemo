@@ -5,7 +5,8 @@ import cors from 'cors'
 import path from 'path'
 import { ErrorCode, MAX_ROOMS, MAX_USERS, MAX_USERS_PER_ROOM, SERVER_LOBBY, SERVER_PORT, TILEMAP_COLUMNS, TILEMAP_ROWS } from './client/src/ts/settings'
 import { WaveFunctionCollapse } from './wave-function-collapse'
-
+import { readFileSync } from 'fs';
+console.log(process.cwd())
 const app = express()
 const httpServer = createServer(app)
 const io = new Server(httpServer)
@@ -150,8 +151,11 @@ class DataBase {
 }
 let db = new DataBase()
 let matrix: [number, number, boolean][][] = []
+let imageData = readFileSync('tilemap.png')
 io.on('connection', (socket) => {
 
+    socket.on('tilemap-req', () => {io.emit('tilemap-data', imageData)})
+    
     socket.on('set-username-request', (data: { username: string }) => {
         if (db.usersLength() < MAX_USERS) {
             if (!db.existUser(data.username)) {
