@@ -1,6 +1,6 @@
 import { Color, Engine, Input } from "excalibur";
 import { MainMenu } from "@root/scenes/main-menu";
-import { MAINMENU, RES_HEIGHT as GAME_HEIGHT, RES_WIDTH as GAME_WIDTH, MAP_ROOM, LOBBY } from "@root/constants";
+import { MAINMENU, GAME_HEIGHT, GAME_WIDTH, MAP_ROOM, LOBBY } from "@root/constants";
 import { MapTest } from "./scenes/map-test";
 import { Lobby } from "./scenes/lobby";
 

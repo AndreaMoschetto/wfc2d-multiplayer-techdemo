@@ -20,8 +20,8 @@ const configs = yaml.load(fs.readFileSync('configs.yml', 'utf8')) as Configurati
 const wfcRoles = JSON.parse(fs.readFileSync('adjacency-roles.json', 'utf-8')) as AdjacencyRoles
 
 //Game settings
-export const RES_WIDTH = 800
-export const RES_HEIGHT = 600
+export const GAME_WIDTH = 800
+export const GAME_HEIGHT = 600
 export const TILEMAP_ROWS = 30
 export const TILEMAP_COLUMNS = 40
 export const TILE_WIDTH = configs.tile_resolution.width ?? 32
