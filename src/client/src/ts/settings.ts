@@ -24,4 +24,4 @@ export enum ErrorCode{
 }
 
 //debugging
-export const DB_LOG = true
+export const RM_LOG = true

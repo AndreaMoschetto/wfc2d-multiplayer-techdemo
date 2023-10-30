@@ -59,7 +59,6 @@ body {
 }
 
 .game-container {
-    /* border: 2px solid red; */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -69,14 +68,12 @@ body {
 }
 
 #ui {
-    /* border: 2px solid rgb(0, 255, 0); */
     position: absolute;
     top: 33px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    /* border: 2px solid rgb(229, 255, 0);*/
 } 
 
 #ui * {
@@ -91,14 +88,12 @@ body {
 }
 
 #ui .selection-container {
-    /* border: 2px solid red; */
     display: flex;
     flex-direction: row;
     width: 100%;
 }
 
 #ui .roomlist-container {
-    /* border: 2px solid blue; */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -128,7 +123,6 @@ body {
 }
 
 #ui .room-entry {
-    /* border: 2px solid yellow; */
     display: flex;
     flex-direction: row;
     align-content: space-between;
@@ -136,7 +130,6 @@ body {
 }
 
 #ui .room-entry p {
-    /* border: 2px solid white; */
     margin-left: auto;
     margin-right: auto;
     display: inline-block;
@@ -162,7 +155,6 @@ body {
 
 
 #ui .creation-container {
-    /* border: 2px solid white; */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -199,8 +191,6 @@ body {
     font-size: small;
 }
 
-
-/* Stili di base per dispositivi con larghezza schermo inferiore a 600px */
 @media (max-width: 800px) {
     .page-container {
         flex-direction: column;

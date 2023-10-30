@@ -45,10 +45,6 @@ let loader: Loader = new Loader();
 })();
 
 
-
-
-
-
 export { loader, Images }
 
 
