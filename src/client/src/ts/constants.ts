@@ -11,11 +11,13 @@ type Configuration = {
       width: number;
       height: number;
     };
+    rooms_log: boolean
   };
+type AdjacencyRoles = Record<string, { "adjacency": string[][], "solid": boolean }>
 
 
 const configs = yaml.load(fs.readFileSync('configs.yml', 'utf8')) as Configuration
-
+const wfcRoles = JSON.parse(fs.readFileSync('adjacency-roles.json', 'utf-8')) as AdjacencyRoles
 
 //Game settings
 export const RES_WIDTH = 800
@@ -24,6 +26,7 @@ export const TILEMAP_ROWS = 30
 export const TILEMAP_COLUMNS = 40
 export const TILE_WIDTH = configs.tile_resolution.width ?? 32
 export const TILE_HEIGHT = configs.tile_resolution.height ?? 32
+export const ADJACENCY_ROLES = wfcRoles
 
 
 //Scene names
@@ -46,4 +49,4 @@ export enum ErrorCode{
 }
 
 //debugging
-export const RM_LOG = true
+export const RM_LOG = configs.rooms_log

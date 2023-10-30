@@ -126,3 +126,4 @@ io.on('connection', (socket) => {
 })
 httpServer.listen(SERVER_PORT)
 console.log('[listening] waiting for connections...')
+rm.log()
