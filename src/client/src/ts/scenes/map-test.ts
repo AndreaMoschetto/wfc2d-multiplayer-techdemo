@@ -2,7 +2,7 @@ import { WebSocketManager } from "@root/managers/websocket-manager";
 import { Images } from "@root/resources";
 import { BoundingBox, Engine, Input, SceneActivationContext, SpriteSheet, Tile, TileMap } from "excalibur";
 import { Room } from "./room";
-import { TILEMAP_COLUMNS, TILEMAP_ROWS } from "@root/constants";
+import { TILEMAP_COLUMNS, TILEMAP_ROWS, TILE_HEIGHT, TILE_WIDTH } from "@root/constants";
 
 export class MapTest extends Room {
     private tilemap: TileMap
@@ -18,8 +18,8 @@ export class MapTest extends Room {
         this.tilemap = new TileMap({
             rows: TILEMAP_ROWS,
             columns: TILEMAP_COLUMNS,
-            tileWidth: 32,
-            tileHeight: 32,
+            tileWidth: TILE_WIDTH,
+            tileHeight: TILE_HEIGHT,
         });
     }
 
