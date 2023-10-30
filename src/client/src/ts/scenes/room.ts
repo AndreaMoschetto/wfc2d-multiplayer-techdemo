@@ -20,8 +20,6 @@ export abstract class Room extends Scene {
     override onActivate(_context: SceneActivationContext<unknown>): void {
         this.startingInfo = _context.data as { username: string, allCharacters: { username: string; position: { x: number; y: number } }[], mapMatrix: [number, number, boolean][][] }
         EventManager.getInstance().on('characterMoved', this.handleOnCharacterMoved)
-        //EventManager.getInstance().on('allCharacters', this.handleOnAllCharacters.bind(this))
-        //EventManager.getInstance().on('characterJoined', this.handleOnCharacterJoined.bind(this))
         window.addEventListener('beforeunload', this.handleOnBeforeUnload)
         EventManager.getInstance().on('characterLeft', this.handleOnCharacterLeft)
         
@@ -31,7 +29,6 @@ export abstract class Room extends Scene {
         if(this.startingInfo.allCharacters)
             this.addCharacters(this.startingInfo.allCharacters)
 
-        //this.add(this.player)
     }
     protected abstract generateLevel(matrix: [number, number, boolean][][]): void
 
@@ -44,19 +41,6 @@ export abstract class Room extends Scene {
         this.characters = this.characters.filter(elem => elem !== character)
         this.playerCounter.innerHTML = (this.characters.length + 1).toString()
     }
-
-    // public handleOnAllCharacters(data: any) {
-    //     data.forEach((characterInfo: { username: string, position: { x: number, y: number } }) => {
-    //         const username = characterInfo.username
-    //         const x = characterInfo.position.x
-    //         const y = characterInfo.position.y
-
-    //         let character = new Character(username, x, y)
-    //         this.add(character)
-    //         this.characters.push(character)
-    //     });
-    //     this.playerCounter.innerHTML = (this.characters.length + 1).toString()
-    // }
 
     public handleOnCharacterMoved = (data: { username: string, position: { x: number, y: number } }) => {
         const username = data.username

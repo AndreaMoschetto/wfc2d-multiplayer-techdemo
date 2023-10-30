@@ -1,4 +1,4 @@
-import { ImageSource, Loadable, Loader } from "excalibur";
+import { ImageSource, Loader } from "excalibur";
 import { EventManager } from "./managers/event-manager";
 import { WebSocketManager } from "./managers/websocket-manager";
 

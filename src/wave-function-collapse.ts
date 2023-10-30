@@ -18,10 +18,6 @@ class WFCSlot {
 
     public constraint(adjacencyFilter: string[]): boolean {
         const preLength = this.getEntropy()
-        // console.log(`CONSTRAINT`)
-        // console.log(`actual coords: y:${this.y}, x:${this.x}`)
-        // console.log(`possible tiles: ${this.possibleTiles}`)
-        // console.log(`filter: ${adjacencyFilter}`)
         this.possibleTiles = this.possibleTiles.filter(
             elem => {
                 return adjacencyFilter.includes(elem)
@@ -31,9 +27,6 @@ class WFCSlot {
             this.chosenOne = this.possibleTiles[0] ?? ''
             this.solid = NeighbourConstraints.getSolidity(this.chosenOne)
         }
-
-        // console.log("finished filtering")
-        // console.log(this)
         if (preLength != this.getEntropy()) return true
         return false
     }
@@ -48,17 +41,13 @@ class WFCSlot {
 
     public collapse() {
         let index = Math.floor(Math.random() * this.possibleTiles.length);
-        // console.log(`randomTileIndex: ${index}`)
         this.constraint([this.possibleTiles[index]!])
-
-        // console.log(this.possibleTiles)
     }
 
     public isSolid(): boolean {
         return this.solid
     }
 
-    //to define-------
     public getChosenId(): string {
         return this.chosenOne
     }
@@ -115,7 +104,6 @@ class WFCMatrix {
     public getAdjacentSlots(slot: WFCSlot): WFCSlot[] {
         const x = slot.x
         const y = slot.y
-        // console.log(`searching adjacency slots of: ${y},${x}:`)
         let adjacentSlots: WFCSlot[] = new Array(4)
 
         if (y > 0)
@@ -134,7 +122,6 @@ class WFCMatrix {
     }
 
     public logMatrix() {
-        // console.log("MATRIX:")
         let logging: string = ''
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.columns; j++) {
@@ -144,8 +131,6 @@ class WFCMatrix {
             }
             logging += '\n'
         }
-        // console.log(logging)
-        // console.log("END MATRIX")
     }
 
     public getAllKeys(): [number, number, boolean][][] {
@@ -163,7 +148,6 @@ class WFCMatrix {
     }
 
     public cleanUp() {
-        // //console.log("CLEANUP")
         this.matrix.forEach(row => {
             row.forEach(slot => {
                 if (slot.getEntropy() === 0) {
@@ -183,7 +167,6 @@ export class WaveFunctionCollapse {
     }
 
     public resolve(): [number, number, boolean][][] {
-        //this.matrix.logMatrix()
         while (!this.matrix.isCollapsed()) {
             let slot: WFCSlot = this.matrix.selectSlot()
             if (slot.getEntropy() == 0) {
@@ -192,35 +175,23 @@ export class WaveFunctionCollapse {
             }
             slot.collapse()
             this.propagate(slot)
-            //this.matrix.logMatrix()
         }
         return this.matrix.getAllKeys()
     }
 
     private propagate(startingSlot: WFCSlot) {
         let stack: WFCSlot[] = [startingSlot]
-        // console.log("Propagation from:")
-        // console.log(startingSlot)
 
         while (stack.length > 0) {
             let current = stack.pop()!
-            // console.log("current:")
-            // console.log(current)
             let adjacentSlots = this.matrix.getAdjacentSlots(current)
-            // console.log("adjacentSlots:")
-            // console.log(adjacentSlots)
             for (let i = 0; i < adjacentSlots.length; i++) {
                 let adj = adjacentSlots[i]!
                 if (adj === undefined) continue
-                // console.log("chosen adj: " + i)
                 if (this.constraint(current, adj, i))
                     stack.push(adj)
             }
-            // console.log('PROP MATRIX:')
-            //this.matrix.logMatrix()
         }
-        
-        
     }
 
     private constraint(slot: WFCSlot, neighbour: WFCSlot, i: AdiacencyType): boolean {
@@ -279,7 +250,7 @@ class NeighbourConstraints {
             "solid": false
         },
         "3_0": {
-            "adjacency": [['1_1'], ['2_1', '2_2'], ['2_2','1_2'], ['1_1']],
+            "adjacency": [['1_1'], ['2_1', '2_2'], ['2_2', '1_2'], ['1_1']],
             "solid": true
         },
         "3_2": {

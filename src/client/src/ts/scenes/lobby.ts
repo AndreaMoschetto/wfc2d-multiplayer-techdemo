@@ -18,9 +18,8 @@ export class Lobby extends Scene {
         this.selectedRoomEntryDiv = undefined
     }
     override onActivate(_context: SceneActivationContext<unknown>): void {
-        //window.addEventListener('beforeunload', this.handleOnBeforeUnload.bind(this))
         const data = _context.data as { username: string, roomList: { roomName: string, nUsers: number }[] }
-        // console.log(data)
+        
         this.username = data.username
         this.ui = document.getElementById('ui')!;
 
@@ -105,7 +104,7 @@ export class Lobby extends Scene {
         EventManager.getInstance().on('roomDeclined', (data: { error: ErrorCode }) => {
             const errorCode = data.error
             errorMsg.hidden = false
-            // console.log(errorCode)
+            
             if (errorCode === ErrorCode.FULL)
                 errorMsg.innerHTML = '*there are too many rooms, retry later'
             else if (errorCode === ErrorCode.ALREADY_EXISTS)
@@ -142,7 +141,6 @@ export class Lobby extends Scene {
             divRoomEntry.classList.add('full')
         }
 
-        //-------
         divRoomEntry.onclick = () => {
             if (this.selectedRoomEntryDiv) {
                 this.selectedRoomEntryDiv.classList.remove('selected');
@@ -157,7 +155,7 @@ export class Lobby extends Scene {
     public handleCharacterLeft = (data: { roomName: string }) => {
         if (data.roomName != SERVER_LOBBY) {
             const divRoomEntry = document.getElementById(data.roomName)!
-            // console.log(divRoomEntry.innerHTML)
+            
             const spanNUsers = divRoomEntry.querySelector('p span#n-users')!
             let nUsers = Number(spanNUsers.innerHTML)
             spanNUsers.innerHTML = (--nUsers).toString()
@@ -173,7 +171,7 @@ export class Lobby extends Scene {
     }
     public handleCharacterJoined = (data: { roomName: string }) => {
         const divRoomEntry = document.getElementById(data.roomName)!
-        // console.log(divRoomEntry.innerHTML)
+        
         const spanNUsers = divRoomEntry.querySelector('p span#n-users')!
         let nUsers = Number(spanNUsers.innerHTML)
         spanNUsers.innerHTML = (++nUsers).toString()
