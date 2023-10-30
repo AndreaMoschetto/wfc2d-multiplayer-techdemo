@@ -1,16 +1,14 @@
-import { EventManager } from "@root/managers/event-manager";
 import { WebSocketManager } from "@root/managers/websocket-manager";
 import { Images } from "@root/resources";
 import { BoundingBox, Engine, Input, SceneActivationContext, SpriteSheet, Tile, TileMap } from "excalibur";
 import { Room } from "./room";
+import { TILEMAP_COLUMNS, TILEMAP_ROWS } from "@root/constants";
 
 export class MapTest extends Room {
     private tilemap: TileMap
     private tilemapSpriteSheet!: SpriteSheet
 
     private padding!: number
-    private screenWidth!: number
-    private screenHeight!: number
     private mapWidth!: number
     private mapHeight!: number
     private box!: BoundingBox
@@ -18,8 +16,8 @@ export class MapTest extends Room {
     public constructor() {
         super();
         this.tilemap = new TileMap({
-            rows: 30,
-            columns: 40,
+            rows: TILEMAP_ROWS,
+            columns: TILEMAP_COLUMNS,
             tileWidth: 32,
             tileHeight: 32,
         });
@@ -27,7 +25,6 @@ export class MapTest extends Room {
 
     override onInitialize(_engine: Engine): void {
         super.onInitialize(_engine)
-        EventManager.getInstance().on('mapGenerated', this.handleMapGenerated.bind(this))
 
         this.tilemapSpriteSheet = SpriteSheet.fromImageSource({
             image: Images.tilemapImage,
@@ -46,8 +43,6 @@ export class MapTest extends Room {
         });
 
         this.padding = 1
-        this.screenWidth = _engine.canvasWidth
-        this.screenHeight = _engine.canvasHeight;
         this.mapWidth = this.tilemap.columns * this.tilemap.tileWidth;
         this.mapHeight = this.tilemap.rows * this.tilemap.tileHeight;
         this.box = new BoundingBox(
@@ -56,9 +51,7 @@ export class MapTest extends Room {
             this.mapWidth - this.padding,
             this.mapHeight - this.padding
         )
-        console.log(`screenWidth:${this.screenWidth}\nscreenHeight:${this.screenHeight}\nmapWidth:${this.mapWidth}\nmapHeight:${this.mapHeight}`)
-        console.log(this.box)
-        this.produceMap()
+        
     }
 
     private spawnPlayer() {
@@ -67,24 +60,19 @@ export class MapTest extends Room {
         while(true){
             let tileX = Math.floor(tilePadding + Math.random() * (this.tilemap.columns - tilePadding*2))
             let tileY = Math.floor(tilePadding + Math.random() * (this.tilemap.rows - tilePadding*2))
-            console.log(`tile coords: ${tileX}, ${tileY}`)
     
             initialTile = this.tilemap.getTile(tileX, tileY)
-            console.log(initialTile)
+            
             if (!initialTile.solid) break
         }
         this.player.pos.setTo(initialTile.pos.x, initialTile.pos.y)
-        console.log(`player at ${this.player.pos.x}, ${this.player.pos.y}\ntile at: ${initialTile.pos.x}, ${initialTile.pos.y}`)
+        
         this.camera.strategy.lockToActor(this.player)
         this.camera.strategy.limitCameraBounds(this.box)
         this.add(this.player)
     }
 
-    private produceMap() {
-        WebSocketManager.getInstance().sendMapRequest(this.tilemap.rows, this.tilemap.columns)
-    }
-
-    private handleMapGenerated(matrix: [number, number, boolean][][]){
+    protected override generateLevel(matrix: [number, number, boolean][][]): void {
         this.remove(this.tilemap)
         for (let y = 0; y < this.tilemap.rows; y++) {
             for (let x = 0; x < this.tilemap.columns; x++) {
@@ -96,8 +84,7 @@ export class MapTest extends Room {
                 this.tilemap.getTile(x, y).solid = solidity
             }
         }
-        console.log('adding, map')
-        console.log(matrix)
+        
         this.add(this.tilemap)
         this.spawnPlayer()
     }
@@ -105,6 +92,7 @@ export class MapTest extends Room {
     override onPostUpdate(_engine: Engine, _delta: number): void {
         if (_engine.input.keyboard.isHeld(Input.Keys.R)) {
             this.spawnPlayer()
+            WebSocketManager.getInstance().sendPosition(this.player.name, this.player.pos)
         }
     }
 

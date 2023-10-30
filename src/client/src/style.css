@@ -67,31 +67,115 @@ body {
     height: fit-content;
 }
 
-.game-container #ui {
+#ui {
     position: absolute;
+    top: 33px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+} 
+
+#ui * {
+    font-family: 'Courier New', monospace;
+    color: white;
+    font-size: 25px;
 }
 
-#ui.MainMenu .button.button--start {
-    font-family: 'Courier New', monospace;
-    background: rgb(0, 0, 0);
-    color: rgb(255, 255, 255);
-    height: 40px;
-    width: 70px;
+#ui .selection-title {
+    display: inline-block;
+    text-align: center;
+}
+
+#ui .selection-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+#ui .roomlist-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+}
+
+#ui .room-list {
+    display: flex;
+    flex-direction: column;
+    border-left: 2px solid white;
+    width: 80%;
+    max-height: 300px;
+    height: 300px;
+    overflow-y: scroll;
+}
+
+#ui ::-webkit-scrollbar {
+    width: 10px;
+}
+
+#ui ::-webkit-scrollbar-track {
+    background-color: #000000;
+}
+
+#ui ::-webkit-scrollbar-thumb {
+    background: #ffffff;
+}
+
+#ui .room-entry {
+    display: flex;
+    flex-direction: row;
+    align-content: space-between;
+    height: 65px;
+}
+
+#ui .room-entry p {
+    margin-left: auto;
+    margin-right: auto;
+    display: inline-block;
+}
+
+#ui .room-entry:hover,
+#ui .room-entry:hover>p,
+#ui .room-entry:hover span {
+    background-color: #d0d0d0;
+    color: black;
+}
+#ui .room-entry.selected,
+#ui .room-entry.selected>p,
+#ui .room-entry.selected span {
+    background-color: white;
+    color: black;
+}
+#ui .room-entry.full,
+#ui .room-entry.full>p,
+#ui .room-entry.full span {
+    color: #747474;
+}
+
+
+#ui .creation-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+}
+
+#ui button {
+    background: black;
+    color: white;
     border: 2px solid white;
     margin-top: 30px;
     font-size: 24px;
 }
 
-#ui.MainMenu .button.button--start:hover {
+#ui button:hover {
     background: rgb(255, 255, 255);
     color: rgb(0, 0, 0);
 }
 
-.username-input {
+#ui input {
     font-family: 'Courier New', monospace;
     background: rgb(0, 0, 0);
     color: rgb(255, 255, 255);
@@ -102,22 +186,22 @@ body {
     text-align: center;
 }
 
-.error-msg {
+#ui .error-msg {
     color: red;
     font-size: small;
 }
 
-
-/* Stili di base per dispositivi con larghezza schermo inferiore a 600px */
 @media (max-width: 800px) {
     .page-container {
         flex-direction: column;
     }
 
-    .game-container,#excalibur-play-root {
+    .game-container,
+    #excalibur-play-root {
         display: none;
     }
-    .phone-alert{
+
+    .phone-alert {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -127,7 +211,7 @@ body {
 }
 
 @media (min-width: 801px) {
-    .phone-alert{
+    .phone-alert {
         display: none;
     }
 }

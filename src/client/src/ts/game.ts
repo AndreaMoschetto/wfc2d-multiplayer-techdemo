@@ -1,8 +1,8 @@
 import { Color, Engine, Input } from "excalibur";
 import { MainMenu } from "@root/scenes/main-menu";
-import { Room } from "@root/scenes/room";
-import { MAINMENU, RES_HEIGHT as GAME_HEIGHT, RES_WIDTH as GAME_WIDTH, ROOM, MAP_TEST } from "@root/settings";
+import { MAINMENU, RES_HEIGHT as GAME_HEIGHT, RES_WIDTH as GAME_WIDTH, MAP_ROOM, LOBBY } from "@root/constants";
 import { MapTest } from "./scenes/map-test";
+import { Lobby } from "./scenes/lobby";
 
 export class Game extends Engine {
     constructor() {
@@ -14,8 +14,8 @@ export class Game extends Engine {
             suppressHiDPIScaling: false
         })
         this.addScene(MAINMENU, new MainMenu())
-        this.addScene(ROOM, new Room())
-        this.addScene(MAP_TEST, new MapTest())
+        this.addScene(MAP_ROOM, new MapTest())
+        this.addScene(LOBBY, new Lobby())
     }
 }
 

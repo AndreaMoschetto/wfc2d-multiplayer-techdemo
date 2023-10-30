@@ -1,0 +1,12 @@
+# General
+limits:
+  users: 10
+  users_per_room: 2
+  rooms: 3
+
+tile_resolution:
+  width: 32
+  height: 32
+
+#Debug
+rooms_log: false

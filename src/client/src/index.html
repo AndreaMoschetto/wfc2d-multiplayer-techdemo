@@ -17,7 +17,7 @@
             <p>This tech demo has been developed with the main purpose of studing:</p>
             <ul>
                 <li><b>Wave Function Collapse</b> algorithm for map generation</li>
-                <li><b>Web Socket</b> technology for a multiplayer gameplay</li>
+                <li><b>Socket.IO</b> technology for a multiplayer gameplay</li>
             </ul>
             <p>This little project is a pretty way to make the two things work together.</p>
             <h2>>how to play</h2>
@@ -26,13 +26,14 @@
                 <li>Insert your nickname and press Go!</li><br>
                 <li>Explore the map and meet other online users</li>
             </ol>
-            <p id="center"><i>**press R to respawn if you get stuck ^-^ **</i></p>
+            <p id="center"><i>**use WASD to move and press R to respawn if you get stuck ^-^ **</i></p>
         </div>
 
         <div class="game-container">
             <canvas id="game"></canvas>
             <div id="ui"></div>
-            <p> #Online Players: <span id="player-counter">-</span> / <span id="player-limit">-</span></p>
+            
+            <p> #Players in your room: <span id="player-counter">-</span> / <span id="player-limit">-</span></p>
         </div>
         <div class="phone-alert">
             <p>game not available on this device</p>
