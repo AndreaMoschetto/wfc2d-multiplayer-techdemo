@@ -2,7 +2,7 @@ import { WebSocketManager } from "@root/managers/websocket-manager";
 import { Images } from "@root/resources";
 import { BoundingBox, Engine, Input, SceneActivationContext, SpriteSheet, Tile, TileMap } from "excalibur";
 import { Room } from "./room";
-import { TILEMAP_COLUMNS, TILEMAP_ROWS } from "@root/settings";
+import { TILEMAP_COLUMNS, TILEMAP_ROWS } from "@root/constants";
 
 export class MapTest extends Room {
     private tilemap: TileMap

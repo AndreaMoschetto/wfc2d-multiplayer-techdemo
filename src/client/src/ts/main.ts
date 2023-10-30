@@ -1,5 +1,5 @@
 import { Game } from "@root/game";
-import { MAINMENU, MAX_USERS_PER_ROOM, RES_HEIGHT, RES_WIDTH } from "@root/settings";
+import { MAINMENU, MAX_USERS_PER_ROOM, RES_HEIGHT, RES_WIDTH } from "@root/constants";
 import { loader } from "@root/resources";
 
 document.getElementById('player-limit')!.innerHTML = MAX_USERS_PER_ROOM.toString()

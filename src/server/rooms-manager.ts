@@ -1,4 +1,4 @@
-import { RM_LOG } from "../client/src/ts/settings";
+import { RM_LOG } from "../client/src/ts/constants";
 
 class User {
     public username: string

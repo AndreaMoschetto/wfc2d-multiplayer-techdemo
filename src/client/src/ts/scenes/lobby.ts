@@ -1,6 +1,6 @@
 import { EventManager } from "@root/managers/event-manager";
 import { WebSocketManager } from "@root/managers/websocket-manager";
-import { ErrorCode, MAP_ROOM, MAX_USERS_PER_ROOM, SERVER_LOBBY } from "@root/settings";
+import { ErrorCode, MAP_ROOM, MAX_USERS_PER_ROOM, SERVER_LOBBY } from "@root/constants";
 import { Scene, SceneActivationContext } from "excalibur";
 
 export class Lobby extends Scene {
